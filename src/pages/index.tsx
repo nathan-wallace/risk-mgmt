@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Risk, RiskInput } from '@/types/risk';
 
 export default function Home() {
@@ -159,6 +159,42 @@ export default function Home() {
     URL.revokeObjectURL(url);
   };
 
+  const fileInput = useRef<HTMLInputElement | null>(null);
+
+  const importCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result);
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length < 2) return;
+      const headers = lines[0].split(',');
+      const records: Risk[] = lines.slice(1).map((l) => {
+        const values = l.split(',');
+        const row: Record<string, string> = {};
+        headers.forEach((h, idx) => (row[h.trim()] = values[idx]?.trim() || ''));
+        return {
+          id:
+            row.id || Date.now().toString() + Math.random().toString(16).slice(2),
+          description: row.description || '',
+          category: row.category || '',
+          probability: Number(row.probability) || 1,
+          impact: Number(row.impact) || 1,
+          owner: row.owner || '',
+          mitigation: row.mitigation || '',
+          status: (row.status as Risk['status']) || 'Open',
+          dateIdentified: row.dateIdentified || new Date().toISOString(),
+          lastReviewed: row.lastReviewed || new Date().toISOString(),
+        };
+      });
+      const updated = [...risks, ...records];
+      save(updated);
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  };
+
   const color = (score: number) => {
     if (score >= 15) return 'bg-red-500';
     if (score >= 5) return 'bg-yellow-300';
@@ -288,6 +324,14 @@ export default function Home() {
               <button onClick={() => setFilter(null)} className="border px-2 py-1">Clear Filter</button>
             )}
             <button onClick={exportCSV} className="border px-2 py-1">Export CSV</button>
+            <input
+              type="file"
+              accept=".csv"
+              ref={fileInput}
+              onChange={importCSV}
+              className="hidden"
+            />
+            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1">Import CSV</button>
           </div>
         </div>
         <table className="w-full border">
