@@ -196,16 +196,21 @@ export default function Home() {
   };
 
   const color = (score: number) => {
-    if (score >= 15) return 'bg-red-500';
+    if (score >= 15) return 'bg-red-500 text-white';
     if (score >= 5) return 'bg-yellow-300';
     return 'bg-green-300';
   };
 
   return (
-    <div className="p-4 space-y-6">
-      <h1 className="text-2xl font-bold">Risk Register</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-indigo-600 text-white shadow">
+        <div className="container mx-auto px-4 py-3">
+          <h1 className="text-xl font-semibold">Risk Register</h1>
+        </div>
+      </nav>
+      <main className="container mx-auto p-4 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-lg shadow p-4 space-y-2">
           <h2 className="font-semibold">{editingId ? 'Edit Risk' : 'Add Risk'}</h2>
           <div className="space-y-2">
             <input
@@ -281,18 +286,18 @@ export default function Home() {
               <p className="text-red-500 text-sm">{errors.impact}</p>
             )}
             <div className="space-x-2">
-              <button onClick={submit} className="bg-blue-500 text-white p-2">
+              <button onClick={submit} className="bg-blue-500 text-white px-3 py-1 rounded">
                 {editingId ? 'Update' : 'Add'}
               </button>
               {editingId && (
-                <button onClick={cancelEdit} className="border p-2">Cancel</button>
+                <button onClick={cancelEdit} className="border px-3 py-1 rounded">Cancel</button>
               )}
             </div>
           </div>
         </div>
-        <div>
+        <div className="bg-white rounded-lg shadow p-4 overflow-auto">
           <h2 className="font-semibold">Risk Matrix</h2>
-          <table className="border-collapse">
+          <table className="border-collapse rounded shadow">
             <tbody>
               {Array.from({ length: 5 }, (_, i) => 5 - i).map((impact) => (
                 <tr key={impact}>
@@ -316,14 +321,14 @@ export default function Home() {
           </table>
         </div>
       </div>
-      <div>
+      <div className="bg-white rounded-lg shadow p-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold">Risks</h2>
           <div className="space-x-2">
             {filter && (
-              <button onClick={() => setFilter(null)} className="border px-2 py-1">Clear Filter</button>
+              <button onClick={() => setFilter(null)} className="border px-2 py-1 rounded hover:bg-gray-100">Clear Filter</button>
             )}
-            <button onClick={exportCSV} className="border px-2 py-1">Export CSV</button>
+            <button onClick={exportCSV} className="border px-2 py-1 rounded hover:bg-gray-100">Export CSV</button>
             <input
               type="file"
               accept=".csv"
@@ -331,12 +336,12 @@ export default function Home() {
               onChange={importCSV}
               className="hidden"
             />
-            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1">Import CSV</button>
+            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1 rounded hover:bg-gray-100">Import CSV</button>
           </div>
         </div>
-        <table className="w-full border">
+        <table className="w-full border rounded">
           <thead>
-            <tr className="bg-gray-200">
+            <tr className="bg-gray-100">
               <th className="border p-1">ID</th>
               <th className="border p-1">Description</th>
               <th className="border p-1">Category</th>
@@ -347,7 +352,7 @@ export default function Home() {
           </thead>
           <tbody>
             {filteredRisks.map((r) => (
-              <tr key={r.id} className="border-t">
+              <tr key={r.id} className="border-t hover:bg-gray-50 transition">
                 <td className="border p-1">{r.id}</td>
                 <td className="border p-1">{r.description}</td>
                 <td className="border p-1">{r.category}</td>
@@ -362,6 +367,7 @@ export default function Home() {
           </tbody>
         </table>
       </div>
+      </main>
     </div>
   );
 }
