@@ -14,6 +14,7 @@ export default function Home() {
     status: 'Open',
     dateIdentified: new Date().toISOString(),
   });
+  const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
 
   useEffect(() => {
     fetch('/api/risks')
@@ -21,7 +22,22 @@ export default function Home() {
       .then(setRisks);
   }, []);
 
+  const validate = () => {
+    const errs: Partial<Record<keyof RiskInput, string>> = {};
+    if (!form.description.trim()) errs.description = 'Description is required';
+    if (!form.category.trim()) errs.category = 'Category is required';
+    if (!form.owner.trim()) errs.owner = 'Owner is required';
+    if (!form.mitigation.trim()) errs.mitigation = 'Mitigation is required';
+    if (form.probability < 1 || form.probability > 5)
+      errs.probability = 'Probability must be 1-5';
+    if (form.impact < 1 || form.impact > 5)
+      errs.impact = 'Impact must be 1-5';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const submit = async () => {
+    if (!validate()) return;
     const res = await fetch('/api/risks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -39,6 +55,7 @@ export default function Home() {
       status: 'Open',
       dateIdentified: new Date().toISOString(),
     });
+    setErrors({});
   };
 
   const matrix: Record<number, Record<number, Risk[]>> = {};
@@ -99,10 +116,42 @@ export default function Home() {
         <div>
           <h2 className="font-semibold">Add Risk</h2>
           <div className="space-y-2">
-            <input className="border p-1 w-full" placeholder="Description" value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-            <input className="border p-1 w-full" placeholder="Category" value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} />
-            <input className="border p-1 w-full" placeholder="Owner" value={form.owner} onChange={(e) => setForm({...form, owner: e.target.value})} />
-            <textarea className="border p-1 w-full" placeholder="Mitigation" value={form.mitigation} onChange={(e) => setForm({...form, mitigation: e.target.value})} />
+            <input
+              className="border p-1 w-full"
+              placeholder="Description"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+            />
+            {errors.description && (
+              <p className="text-red-500 text-sm">{errors.description}</p>
+            )}
+            <input
+              className="border p-1 w-full"
+              placeholder="Category"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+            />
+            {errors.category && (
+              <p className="text-red-500 text-sm">{errors.category}</p>
+            )}
+            <input
+              className="border p-1 w-full"
+              placeholder="Owner"
+              value={form.owner}
+              onChange={(e) => setForm({ ...form, owner: e.target.value })}
+            />
+            {errors.owner && (
+              <p className="text-red-500 text-sm">{errors.owner}</p>
+            )}
+            <textarea
+              className="border p-1 w-full"
+              placeholder="Mitigation"
+              value={form.mitigation}
+              onChange={(e) => setForm({ ...form, mitigation: e.target.value })}
+            />
+            {errors.mitigation && (
+              <p className="text-red-500 text-sm">{errors.mitigation}</p>
+            )}
             <select className="border p-1 w-full" value={form.status} onChange={(e) => setForm({...form, status: e.target.value as Risk['status']})}>
               <option>Open</option>
               <option>In-Progress</option>
@@ -111,10 +160,34 @@ export default function Home() {
             </select>
             <div className="flex gap-2">
               <label>Prob</label>
-              <input type="number" min="1" max="5" className="border" value={form.probability} onChange={(e) => setForm({...form, probability: Number(e.target.value)})} />
+              <input
+                type="number"
+                min="1"
+                max="5"
+                className="border"
+                value={form.probability}
+                onChange={(e) =>
+                  setForm({ ...form, probability: Number(e.target.value) })
+                }
+              />
               <label>Impact</label>
-              <input type="number" min="1" max="5" className="border" value={form.impact} onChange={(e) => setForm({...form, impact: Number(e.target.value)})} />
+              <input
+                type="number"
+                min="1"
+                max="5"
+                className="border"
+                value={form.impact}
+                onChange={(e) =>
+                  setForm({ ...form, impact: Number(e.target.value) })
+                }
+              />
             </div>
+            {errors.probability && (
+              <p className="text-red-500 text-sm">{errors.probability}</p>
+            )}
+            {errors.impact && (
+              <p className="text-red-500 text-sm">{errors.impact}</p>
+            )}
             <button onClick={submit} className="bg-blue-500 text-white p-2">Add</button>
           </div>
         </div>
