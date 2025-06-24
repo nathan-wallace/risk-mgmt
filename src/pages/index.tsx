@@ -3,6 +3,7 @@ import { Risk, RiskInput } from '@/types/risk';
 
 export default function Home() {
   const [risks, setRisks] = useState<Risk[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<{ prob: number; impact: number } | null>(null);
   const [form, setForm] = useState<RiskInput>({
     description: '',
@@ -38,13 +39,47 @@ export default function Home() {
 
   const submit = async () => {
     if (!validate()) return;
-    const res = await fetch('/api/risks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+    if (editingId) {
+      const res = await fetch(`/api/risks/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      setRisks((r) => r.map((item) => (item.id === data.id ? data : item)));
+    } else {
+      const res = await fetch('/api/risks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      setRisks((r) => [...r, data]);
+    }
+    setForm({
+      description: '',
+      category: '',
+      probability: 1,
+      impact: 1,
+      owner: '',
+      mitigation: '',
+      status: 'Open',
+      dateIdentified: new Date().toISOString(),
     });
-    const data = await res.json();
-    setRisks((r) => [...r, data]);
+    setEditingId(null);
+    setErrors({});
+  };
+
+  const startEdit = (risk: Risk) => {
+    setEditingId(risk.id);
+    const { id: discardId, lastReviewed: discardLast, ...rest } = risk;
+    void discardId;
+    void discardLast;
+    setForm(rest);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
     setForm({
       description: '',
       category: '',
@@ -56,6 +91,12 @@ export default function Home() {
       dateIdentified: new Date().toISOString(),
     });
     setErrors({});
+  };
+
+  const removeRisk = async (id: string) => {
+    await fetch(`/api/risks/${id}`, { method: 'DELETE' });
+    setRisks((r) => r.filter((item) => item.id !== id));
+    if (editingId === id) cancelEdit();
   };
 
   const matrix: Record<number, Record<number, Risk[]>> = {};
@@ -114,7 +155,7 @@ export default function Home() {
       <h1 className="text-2xl font-bold">Risk Register</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <h2 className="font-semibold">Add Risk</h2>
+          <h2 className="font-semibold">{editingId ? 'Edit Risk' : 'Add Risk'}</h2>
           <div className="space-y-2">
             <input
               className="border p-1 w-full"
@@ -188,7 +229,14 @@ export default function Home() {
             {errors.impact && (
               <p className="text-red-500 text-sm">{errors.impact}</p>
             )}
-            <button onClick={submit} className="bg-blue-500 text-white p-2">Add</button>
+            <div className="space-x-2">
+              <button onClick={submit} className="bg-blue-500 text-white p-2">
+                {editingId ? 'Update' : 'Add'}
+              </button>
+              {editingId && (
+                <button onClick={cancelEdit} className="border p-2">Cancel</button>
+              )}
+            </div>
           </div>
         </div>
         <div>
@@ -235,6 +283,7 @@ export default function Home() {
               <th className="border p-1">Category</th>
               <th className="border p-1">Prob</th>
               <th className="border p-1">Impact</th>
+              <th className="border p-1">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -245,6 +294,10 @@ export default function Home() {
                 <td className="border p-1">{r.category}</td>
                 <td className="border p-1">{r.probability}</td>
                 <td className="border p-1">{r.impact}</td>
+                <td className="border p-1 space-x-2">
+                  <button onClick={() => startEdit(r)} className="text-blue-600">Edit</button>
+                  <button onClick={() => removeRisk(r.id)} className="text-red-600">Delete</button>
+                </td>
               </tr>
             ))}
           </tbody>
