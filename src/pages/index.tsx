@@ -18,9 +18,19 @@ export default function Home() {
   const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
 
   useEffect(() => {
-    fetch('/api/risks')
-      .then((res) => res.json())
-      .then(setRisks);
+    const saved = typeof window !== 'undefined' && localStorage.getItem('risks');
+    if (saved) {
+      setRisks(JSON.parse(saved));
+    } else {
+      fetch('/risks.json')
+        .then((res) => res.json())
+        .then((data: Risk[]) => {
+          setRisks(data);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('risks', JSON.stringify(data));
+          }
+        });
+    }
   }, []);
 
   const validate = () => {
@@ -37,24 +47,29 @@ export default function Home() {
     return Object.keys(errs).length === 0;
   };
 
-  const submit = async () => {
+  const save = (items: Risk[]) => {
+    setRisks(items);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('risks', JSON.stringify(items));
+    }
+  };
+
+  const submit = () => {
     if (!validate()) return;
     if (editingId) {
-      const res = await fetch(`/api/risks/${editingId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      setRisks((r) => r.map((item) => (item.id === data.id ? data : item)));
+      const updated: Risk = {
+        ...risks.find((r) => r.id === editingId)!,
+        ...form,
+        lastReviewed: new Date().toISOString(),
+      };
+      save(risks.map((item) => (item.id === updated.id ? updated : item)));
     } else {
-      const res = await fetch('/api/risks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      setRisks((r) => [...r, data]);
+      const newRisk: Risk = {
+        id: Date.now().toString(),
+        lastReviewed: new Date().toISOString(),
+        ...form,
+      };
+      save([...risks, newRisk]);
     }
     setForm({
       description: '',
@@ -93,9 +108,9 @@ export default function Home() {
     setErrors({});
   };
 
-  const removeRisk = async (id: string) => {
-    await fetch(`/api/risks/${id}`, { method: 'DELETE' });
-    setRisks((r) => r.filter((item) => item.id !== id));
+  const removeRisk = (id: string) => {
+    const updated = risks.filter((item) => item.id !== id);
+    save(updated);
     if (editingId === id) cancelEdit();
   };
 
