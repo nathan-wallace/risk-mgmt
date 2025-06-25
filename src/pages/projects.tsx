@@ -34,6 +34,7 @@ export default function Projects() {
         riskPlan: '',
       },
       risks: [],
+      categories: [],
     };
     const updated = [...projects, newProject];
     setProjects(updated);

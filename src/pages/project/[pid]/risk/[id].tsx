@@ -21,6 +21,7 @@ export default function ManageRisk() {
   const { pid, id } = router.query as { pid?: string; id?: string };
 
   const [risks, setRisks] = useState<Risk[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [form, setForm] = useState<RiskInput>(emptyForm);
   const [statusNote, setStatusNote] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
@@ -39,6 +40,7 @@ export default function ManageRisk() {
       return;
     }
     setRisks(proj.risks);
+    setCategories(proj.categories || []);
     if (id && id !== 'new') {
       const risk = proj.risks.find((r) => r.id === id);
       if (risk) {
@@ -154,12 +156,22 @@ export default function ManageRisk() {
         <label htmlFor="category" className="block text-sm font-medium">
           Category
         </label>
-        <input
+        <select
           id="category"
           className="border p-1 w-full"
           value={form.category}
           onChange={(e) => setForm({ ...form, category: e.target.value })}
-        />
+        >
+          <option value="">Select...</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+          {!categories.includes(form.category) && form.category && (
+            <option value={form.category}>{form.category}</option>
+          )}
+        </select>
         {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
 
         <label htmlFor="owner" className="block text-sm font-medium">
