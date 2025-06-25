@@ -9,7 +9,8 @@
     "owner": "joe",
     "mitigation": "action plan",
     "status": "In-Progress",
-    "dateIdentified": "2025-06-24T17:46:31.639Z"
+    "dateIdentified": "2025-06-24T17:46:31.639Z",
+    "dateResolved": ""
   },
   {
     "id": "1750787259747",
@@ -21,7 +22,8 @@
     "owner": "",
     "mitigation": "",
     "status": "Open",
-    "dateIdentified": "2025-06-24T17:47:07.215Z"
+    "dateIdentified": "2025-06-24T17:47:07.215Z",
+    "dateResolved": ""
   },
   {
     "id": "1750787260239",
@@ -33,6 +35,7 @@
     "owner": "",
     "mitigation": "",
     "status": "Open",
-    "dateIdentified": "2025-06-24T17:47:39.748Z"
+    "dateIdentified": "2025-06-24T17:47:39.748Z",
+    "dateResolved": ""
   }
 ]

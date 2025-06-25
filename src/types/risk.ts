@@ -17,9 +17,8 @@ export interface Risk {
   status: RiskStatus;
   response: 'Avoid' | 'Mitigate' | 'Transfer' | 'Accept';
   statusHistory: StatusChange[];
-  startDate: string; // ISO
-  endDate: string; // ISO
   dateIdentified: string; // ISO
+  dateResolved?: string; // ISO
   lastReviewed: string; // ISO
 }
 

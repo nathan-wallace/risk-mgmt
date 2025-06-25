@@ -17,9 +17,8 @@
         "note": "Initial entry"
       }
     ],
-    "startDate": "2025-06-24",
-    "endDate": "2025-07-24",
-    "dateIdentified": "2025-06-24T17:46:31.639Z"
+    "dateIdentified": "2025-06-24T17:46:31.639Z",
+    "dateResolved": "2025-07-24"
   },
   {
     "id": "1750787259747",
@@ -39,9 +38,8 @@
         "note": "Initial entry"
       }
     ],
-    "startDate": "2025-06-24",
-    "endDate": "2025-07-24",
-    "dateIdentified": "2025-06-24T17:47:07.215Z"
+    "dateIdentified": "2025-06-24T17:47:07.215Z",
+    "dateResolved": "2025-07-24"
   },
   {
     "id": "1750787260239",
@@ -61,8 +59,7 @@
         "note": "Initial entry"
       }
     ],
-    "startDate": "2025-06-24",
-    "endDate": "2025-07-24",
-    "dateIdentified": "2025-06-24T17:47:39.748Z"
+    "dateIdentified": "2025-06-24T17:47:39.748Z",
+    "dateResolved": "2025-07-24"
   }
 ]

@@ -17,9 +17,8 @@ export default function Home() {
     mitigation: '',
     response: 'Mitigate',
     status: 'Open',
-    startDate: new Date().toISOString(),
-    endDate: new Date().toISOString(),
     dateIdentified: new Date().toISOString(),
+    dateResolved: '',
   });
   const [statusNote, setStatusNote] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
@@ -39,19 +38,32 @@ export default function Home() {
     if (savedRisks) {
       const parsed: Risk[] = JSON.parse(savedRisks);
       setRisks(
-        parsed.map((r) => ({
-          ...r,
-          startDate: r.startDate || new Date().toISOString(),
-          endDate: r.endDate || new Date().toISOString(),
-        })),
+        parsed.map((r) => {
+          const anyRisk = r as Record<string, unknown>;
+          return {
+            ...r,
+            dateIdentified:
+              r.dateIdentified || anyRisk.startDate || new Date().toISOString(),
+            dateResolved: r.dateResolved || anyRisk.endDate || '',
+          };
+        }),
       );
     } else {
       fetch('/risks.json')
         .then((res) => res.json())
         .then((data: Risk[]) => {
-          setRisks(data);
+          const mapped = data.map((r) => {
+            const anyRisk = r as Record<string, unknown>;
+            return {
+              ...r,
+              dateIdentified:
+                r.dateIdentified || anyRisk.startDate || new Date().toISOString(),
+              dateResolved: r.dateResolved || anyRisk.endDate || '',
+            };
+          });
+          setRisks(mapped);
           if (typeof window !== 'undefined') {
-            localStorage.setItem('risks', JSON.stringify(data));
+            localStorage.setItem('risks', JSON.stringify(mapped));
           }
         });
     }
@@ -92,10 +104,13 @@ export default function Home() {
       errs.probability = 'Probability must be 1-5';
     if (form.impact < 1 || form.impact > 5)
       errs.impact = 'Impact must be 1-5';
-    if (!form.startDate) errs.startDate = 'Start date is required';
-    if (!form.endDate) errs.endDate = 'End date is required';
-    if (form.startDate && form.endDate && form.startDate > form.endDate)
-      errs.endDate = 'End date must be after start date';
+    if (!form.dateIdentified) errs.dateIdentified = 'Date Identified is required';
+    if (
+      form.dateResolved &&
+      form.dateIdentified &&
+      form.dateIdentified > form.dateResolved
+    )
+      errs.dateResolved = 'Date Resolved must be after Date Identified';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -157,9 +172,8 @@ export default function Home() {
       mitigation: '',
       response: 'Mitigate',
       status: 'Open',
-      startDate: new Date().toISOString(),
-      endDate: new Date().toISOString(),
       dateIdentified: new Date().toISOString(),
+      dateResolved: '',
     });
     setStatusNote('');
     setEditingId(null);
@@ -174,8 +188,8 @@ export default function Home() {
     void discardHistory;
     setForm({
       ...rest,
-      startDate: rest.startDate || new Date().toISOString(),
-      endDate: rest.endDate || new Date().toISOString(),
+      dateIdentified: rest.dateIdentified || new Date().toISOString(),
+      dateResolved: rest.dateResolved || '',
     });
     setStatusNote('');
   };
@@ -191,9 +205,8 @@ export default function Home() {
       mitigation: '',
       response: 'Mitigate',
       status: 'Open',
-      startDate: new Date().toISOString(),
-      endDate: new Date().toISOString(),
       dateIdentified: new Date().toISOString(),
+      dateResolved: '',
     });
     setStatusNote('');
     setErrors({});
@@ -312,9 +325,9 @@ export default function Home() {
           response: (r['response'] as Risk['response']) || 'Mitigate',
           status: (r['status'] as Risk['status']) || 'Open',
           statusHistory: [],
-          startDate: (r['startDate'] as string) || new Date().toISOString(),
-          endDate: (r['endDate'] as string) || new Date().toISOString(),
-          dateIdentified: (r['dateIdentified'] as string) || new Date().toISOString(),
+          dateIdentified:
+            (r['dateIdentified'] as string) || (r['startDate'] as string) || new Date().toISOString(),
+          dateResolved: (r['dateResolved'] as string) || (r['endDate'] as string) || '',
           lastReviewed: (r['lastReviewed'] as string) || new Date().toISOString(),
         }));
         const updated = [...risks, ...records];
@@ -445,31 +458,31 @@ export default function Home() {
               value={statusNote}
               onChange={(e) => setStatusNote(e.target.value)}
             />
-            <label htmlFor="startDate" className="block text-sm font-medium">
-              Start Date
+            <label htmlFor="dateIdentified" className="block text-sm font-medium">
+              Date Identified
             </label>
             <input
-              id="startDate"
+              id="dateIdentified"
               type="date"
               className="border p-1 w-full"
-              value={form.startDate ? form.startDate.split('T')[0] : ''}
-              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+              value={form.dateIdentified ? form.dateIdentified.split('T')[0] : ''}
+              onChange={(e) => setForm({ ...form, dateIdentified: e.target.value })}
             />
-            {errors.startDate && (
-              <p className="text-red-500 text-sm">{errors.startDate}</p>
+            {errors.dateIdentified && (
+              <p className="text-red-500 text-sm">{errors.dateIdentified}</p>
             )}
-            <label htmlFor="endDate" className="block text-sm font-medium">
-              End Date
+            <label htmlFor="dateResolved" className="block text-sm font-medium">
+              Date Resolved
             </label>
             <input
-              id="endDate"
+              id="dateResolved"
               type="date"
               className="border p-1 w-full"
-              value={form.endDate ? form.endDate.split('T')[0] : ''}
-              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+              value={form.dateResolved ? form.dateResolved.split('T')[0] : ''}
+              onChange={(e) => setForm({ ...form, dateResolved: e.target.value })}
             />
-            {errors.endDate && (
-              <p className="text-red-500 text-sm">{errors.endDate}</p>
+            {errors.dateResolved && (
+              <p className="text-red-500 text-sm">{errors.dateResolved}</p>
             )}
             <div className="flex gap-2">
               <label htmlFor="probability">Prob</label>
@@ -659,8 +672,8 @@ export default function Home() {
             <th className="border p-1">Category</th>
             <th className="border p-1">Prob</th>
             <th className="border p-1">Impact</th>
-            <th className="border p-1">Start</th>
-            <th className="border p-1">End</th>
+            <th className="border p-1">Identified</th>
+            <th className="border p-1">Resolved</th>
             <th className="border p-1">Actions</th>
           </tr>
           </thead>
@@ -672,8 +685,8 @@ export default function Home() {
                 <td className="border p-1">{r.category}</td>
                 <td className="border p-1">{r.probability}</td>
                 <td className="border p-1">{r.impact}</td>
-                <td className="border p-1">{r.startDate ? r.startDate.split('T')[0] : ''}</td>
-                <td className="border p-1">{r.endDate ? r.endDate.split('T')[0] : ''}</td>
+                <td className="border p-1">{r.dateIdentified ? r.dateIdentified.split('T')[0] : ''}</td>
+                <td className="border p-1">{r.dateResolved ? r.dateResolved.split('T')[0] : ''}</td>
                 <td className="border p-1 space-x-2">
                   <button onClick={() => startEdit(r)} className="text-blue-600">Edit</button>
                   <button onClick={() => removeRisk(r.id)} className="text-red-600">Delete</button>
