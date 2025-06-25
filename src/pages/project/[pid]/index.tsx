@@ -7,6 +7,7 @@ import RiskHistoryTimeline from '@/components/RiskHistoryTimeline';
 import RiskMatrixPanel from '@/components/RiskMatrixPanel';
 import AggregatedRiskPanel from '@/components/AggregatedRiskPanel';
 import ProjectDetailsPanel from '@/components/ProjectDetailsPanel';
+import RiskRow from '@/components/RiskRow';
 import * as XLSX from 'xlsx';
 
 export default function ProjectHome() {
@@ -317,34 +318,15 @@ export default function ProjectHome() {
             <thead>
               <tr className="bg-gray-100">
                 <th className="border p-1">ID</th>
-                <th className="border p-1">Description</th>
-                <th className="border p-1">Category</th>
-                <th className="border p-1">Prob</th>
-                <th className="border p-1">Impact</th>
-                <th className="border p-1">Identified</th>
-                <th className="border p-1">Resolved</th>
+                <th className="border p-1">Risk</th>
+                <th className="border p-1">Score</th>
+                <th className="border p-1">Status / Dates</th>
                 <th className="border p-1">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredRisks.map((r) => (
-                <tr key={r.id} className="border-t hover:bg-gray-50 transition">
-                  <td className="border p-1">{r.id}</td>
-                  <td className="border p-1">{r.description}</td>
-                  <td className="border p-1">{r.category}</td>
-                  <td className="border p-1">{r.probability}</td>
-                  <td className="border p-1">{r.impact}</td>
-                  <td className="border p-1">{r.dateIdentified ? r.dateIdentified.split('T')[0] : ''}</td>
-                  <td className="border p-1">{r.dateResolved ? r.dateResolved.split('T')[0] : ''}</td>
-                  <td className="border p-1 space-x-2">
-                    <Link href={`/project/${pid}/risk/${r.id}`} className="text-blue-600">
-                      Manage
-                    </Link>
-                    <button onClick={() => removeRisk(r.id)} className="text-red-600">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+                <RiskRow key={r.id} risk={r} pid={pid as string} onDelete={removeRisk} />
               ))}
             </tbody>
           </table>
