@@ -8,6 +8,7 @@
     "impact": 3,
     "owner": "joe",
     "mitigation": "action plan",
+    "priority": "Medium",
     "status": "In-Progress",
     "response": "Mitigate",
     "statusHistory": [
@@ -29,6 +30,7 @@
     "impact": 1,
     "owner": "",
     "mitigation": "",
+    "priority": "Medium",
     "status": "Open",
     "response": "Accept",
     "statusHistory": [
@@ -50,6 +52,7 @@
     "impact": 1,
     "owner": "",
     "mitigation": "",
+    "priority": "Medium",
     "status": "Open",
     "response": "Transfer",
     "statusHistory": [
