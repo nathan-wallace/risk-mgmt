@@ -14,6 +14,8 @@ export default function Settings() {
     riskPlan: '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ProjectMeta, string>>>({});
+  const [categories, setCategories] = useState<string[]>([]);
+  const [newCategory, setNewCategory] = useState('');
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -30,6 +32,7 @@ export default function Settings() {
           endDate: proj.meta.endDate || '',
           riskPlan: proj.meta.riskPlan || '',
         });
+        setCategories(proj.categories || []);
       }
     }
   }, [router.isReady, pid]);
@@ -54,8 +57,9 @@ export default function Settings() {
     const idx = projects.findIndex((p) => p.id === pid);
     if (idx >= 0) {
       projects[idx].meta = form;
+      projects[idx].categories = categories;
     } else {
-      projects.push({ id: pid as string, meta: form, risks: [] });
+      projects.push({ id: pid as string, meta: form, risks: [], categories });
     }
     localStorage.setItem('projects', JSON.stringify(projects));
     router.push(`/project/${pid}`);
@@ -129,6 +133,42 @@ export default function Settings() {
           value={form.riskPlan}
           onChange={(e) => setForm({ ...form, riskPlan: e.target.value })}
         />
+
+        <label className="block text-sm font-medium mt-4">Risk Categories</label>
+        <ul className="space-y-1">
+          {categories.map((cat, idx) => (
+            <li key={idx} className="flex items-center">
+              <span className="flex-1">{cat}</span>
+              <button
+                type="button"
+                onClick={() => setCategories(categories.filter((_, i) => i !== idx))}
+                className="text-red-600 ml-2"
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="flex items-center mt-1">
+          <input
+            className="border p-1 flex-1"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const trimmed = newCategory.trim();
+              if (trimmed && !categories.includes(trimmed)) {
+                setCategories([...categories, trimmed]);
+              }
+              setNewCategory('');
+            }}
+            className="ml-2 border px-2 py-1 rounded"
+          >
+            Add
+          </button>
+        </div>
 
         <div className="space-x-2 text-right pt-2">
           <button onClick={save} className="bg-indigo-600 text-white px-3 py-1 rounded">

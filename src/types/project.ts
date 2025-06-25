@@ -13,4 +13,5 @@ export interface Project {
   id: string;
   meta: ProjectMeta;
   risks: Risk[];
+  categories: string[];
 }
