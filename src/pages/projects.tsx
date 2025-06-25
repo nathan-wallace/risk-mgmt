@@ -12,6 +12,15 @@ export default function Projects() {
     if (saved) setProjects(JSON.parse(saved));
   }, []);
 
+  const deleteProject = (id: string) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+    const updated = projects.filter((p) => p.id !== id);
+    setProjects(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('projects', JSON.stringify(updated));
+    }
+  };
+
   const createProject = () => {
     const id = Date.now().toString();
     const newProject: Project = {
@@ -44,9 +53,18 @@ export default function Projects() {
             className="bg-white rounded shadow p-3 flex justify-between items-center"
           >
             <span>{p.meta.projectName || 'Untitled Project'}</span>
-            <Link href={`/project/${p.id}`} className="text-blue-600">
-              Open
-            </Link>
+            <div className="space-x-2">
+              <Link href={`/project/${p.id}`} className="text-blue-600">
+                Open
+              </Link>
+              <button
+                onClick={() => deleteProject(p.id)}
+                className="text-red-600"
+                aria-label="Delete project"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
