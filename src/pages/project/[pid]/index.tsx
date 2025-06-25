@@ -50,6 +50,12 @@ export default function ProjectHome() {
       if (addRef.current && !addRef.current.contains(e.target as Node)) {
         setShowAddOptions(false);
       }
+      if (
+        criticalityRef.current &&
+        !criticalityRef.current.contains(e.target as Node)
+      ) {
+        setShowCriticalityInfo(false);
+      }
     };
     document.addEventListener('click', handler);
     return () => document.removeEventListener('click', handler);
@@ -137,8 +143,10 @@ export default function ProjectHome() {
 
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [showAddOptions, setShowAddOptions] = useState(false);
+  const [showCriticalityInfo, setShowCriticalityInfo] = useState(false);
   const exportRef = useRef<HTMLDivElement | null>(null);
   const addRef = useRef<HTMLDivElement | null>(null);
+  const criticalityRef = useRef<HTMLDivElement | null>(null);
 
   const fileInput = useRef<HTMLInputElement | null>(null);
 
@@ -319,7 +327,37 @@ export default function ProjectHome() {
               <tr className="bg-gray-100">
                 <th className="border p-1">ID</th>
                 <th className="border p-1">Risk</th>
-                <th className="border p-1">Criticality</th>
+                <th className="border p-1">
+                  <div
+                    className="flex items-center justify-center relative"
+                    ref={criticalityRef}
+                  >
+                    <span>Criticality</span>
+                    <button
+                      onClick={() => setShowCriticalityInfo((p) => !p)}
+                      aria-label="Criticality info"
+                      className="ml-1 text-gray-600 hover:text-black"
+                    >
+                      <svg
+                        className="w-3 h-3"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                    {showCriticalityInfo && (
+                      <div className="absolute left-0 top-full mt-1 w-48 bg-white border rounded shadow p-2 text-xs z-10">
+                        A higher score means the risk is more serious.
+                      </div>
+                    )}
+                  </div>
+                </th>
                 <th className="border p-1">Status / Dates</th>
                 <th className="border p-1">Actions</th>
               </tr>
