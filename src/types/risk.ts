@@ -14,6 +14,7 @@ export interface Risk {
   impact: number; // 1-5
   owner: string;
   mitigation: string;
+  priority: 'High' | 'Medium' | 'Low';
   status: RiskStatus;
   response: 'Avoid' | 'Mitigate' | 'Transfer' | 'Accept';
   statusHistory: StatusChange[];
