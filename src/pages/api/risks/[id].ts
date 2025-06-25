@@ -24,7 +24,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (req.method) {
     case 'PUT': {
-      const updated = { ...risks[index], ...req.body, lastReviewed: new Date().toISOString() };
+      const { statusNote, ...body } = req.body as Partial<Risk> & { statusNote?: string };
+      const existing = risks[index];
+      const history = [...existing.statusHistory];
+      if (body.status && body.status !== existing.status) {
+        history.push({
+          date: new Date().toISOString(),
+          status: body.status,
+          note: statusNote || '',
+        });
+      }
+      const updated = { ...existing, ...body, lastReviewed: new Date().toISOString(), statusHistory: history };
       risks[index] = updated;
       await writeRisks(risks);
       res.status(200).json(updated);

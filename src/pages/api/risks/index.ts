@@ -28,6 +28,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: Date.now().toString(),
         lastReviewed: new Date().toISOString(),
         ...input,
+        statusHistory: [
+          {
+            date: new Date().toISOString(),
+            status: input.status,
+            note: '',
+          },
+        ],
       };
       risks.push(newRisk);
       await writeRisks(risks);
