@@ -256,7 +256,37 @@ export default function Home() {
       <main className="container mx-auto p-4 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white rounded-lg shadow p-4 overflow-auto">
-          <h2 className="font-semibold mb-2">Risk Matrix</h2>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="font-semibold">Risk Matrix</h2>
+            <div className="flex items-center">
+              <h3 className="font-semibold mr-1">Aggregated Risk</h3>
+              <div className="relative inline-block ml-1" ref={scoreInfoRef}>
+                <button
+                  onClick={() => setShowScoreInfo((p) => !p)}
+                  className="text-gray-600 hover:text-black"
+                  aria-label="Aggregated score info"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+                {showScoreInfo && (
+                  <div className="absolute right-0 mt-1 w-64 bg-white border rounded shadow p-2 text-sm">
+                    Aggregated score is the average of each risk&apos;s probability multiplied by impact. Scores 15 or higher indicate high risk (red), 5–14 moderate (yellow), and below 5 low (green). This metric reflects the overall project risk severity.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
           <div className="flex items-start">
             <table className="border-collapse rounded shadow">
               <caption className="sr-only">Risk matrix showing number of risks for each probability and impact score</caption>
@@ -291,34 +321,6 @@ export default function Home() {
             </tbody>
             </table>
             <div className="ml-4 flex flex-col items-start">
-              <div className="flex items-center">
-                <h3 className="font-semibold mr-1">Aggregated Risk</h3>
-                <div className="relative inline-block ml-1" ref={scoreInfoRef}>
-                  <button
-                    onClick={() => setShowScoreInfo((p) => !p)}
-                    className="text-gray-600 hover:text-black"
-                    aria-label="Aggregated score info"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                  {showScoreInfo && (
-                    <div className="absolute right-0 mt-1 w-64 bg-white border rounded shadow p-2 text-sm">
-                      Aggregated score is the average of each risk&apos;s probability multiplied by impact. Scores 15 or higher indicate high risk (red), 5–14 moderate (yellow), and below 5 low (green). This metric reflects the overall project risk severity.
-                    </div>
-                  )}
-                </div>
-              </div>
               <span className={`mt-1 px-4 py-2 rounded text-2xl font-semibold ${color(aggregatedScore)}`}>
                 {aggregatedScore.toFixed(1)}
               </span>
