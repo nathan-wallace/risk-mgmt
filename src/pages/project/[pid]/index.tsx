@@ -6,6 +6,7 @@ import { ProjectMeta, Project } from '@/types/project';
 import RiskHistoryTimeline from '@/components/RiskHistoryTimeline';
 import RiskMatrixPanel from '@/components/RiskMatrixPanel';
 import AggregatedRiskPanel from '@/components/AggregatedRiskPanel';
+import ProjectDetailsPanel from '@/components/ProjectDetailsPanel';
 import * as XLSX from 'xlsx';
 
 export default function ProjectHome() {
@@ -236,6 +237,7 @@ export default function ProjectHome() {
         </div>
       </nav>
       <main className="container mx-auto p-4 space-y-6">
+        <ProjectDetailsPanel meta={meta} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-4">
             <AggregatedRiskPanel score={aggregatedScore} />
