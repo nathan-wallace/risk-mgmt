@@ -241,13 +241,13 @@ export default function Home() {
             <Link
               href="/risk/new"
               title="Add a Risk"
-              className="border px-2 py-1 rounded hover:bg-gray-100 text-black"
+              className="border px-2 py-1 rounded hover:bg-gray-100 text-black bg-white"
             >
               Add +
             </Link>
             <button
               onClick={() => setShowMeta(true)}
-              className="border px-2 py-1 rounded hover:bg-gray-100 text-black"
+              className="border px-2 py-1 rounded hover:bg-gray-100 text-black bg-white"
             >
               Project Data
             </button>
@@ -330,10 +330,10 @@ export default function Home() {
             </tbody>
           </table>
         </div>
-      </div>
-      <div className="bg-white rounded-lg shadow p-4">
-        <h2 className="font-semibold mb-2">Risk History Timeline</h2>
-        <RiskHistoryTimeline risks={risks} project={meta} />
+        <div className="bg-white rounded-lg shadow p-4">
+          <h2 className="font-semibold mb-2">Risk History Timeline</h2>
+          <RiskHistoryTimeline risks={risks} project={meta} />
+        </div>
       </div>
       <div className="bg-white rounded-lg shadow p-4">
         <div className="flex items-center justify-between">
