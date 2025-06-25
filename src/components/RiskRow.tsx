@@ -8,6 +8,12 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
+const scoreColor = (score: number) => {
+  if (score >= 15) return 'bg-red-500 text-white';
+  if (score >= 5) return 'bg-yellow-300';
+  return 'bg-green-300';
+};
+
 export default function RiskRow({ risk, pid, onDelete }: Props) {
   const shortId = risk.id.length > 6 ? risk.id.slice(-6) : risk.id;
   const score = risk.probability * risk.impact;
@@ -20,11 +26,17 @@ export default function RiskRow({ risk, pid, onDelete }: Props) {
           {risk.category} | Owner: {risk.owner}
         </div>
       </td>
-      <td className="border p-1 text-center">
-        <div className="font-semibold">
+      <td className="border p-1 text-center space-y-1">
+        <div
+          className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center font-semibold ${scoreColor(
+            score
+          )}`}
+        >
+          {score}
+        </div>
+        <div className="text-xs text-gray-500">
           {risk.probability} &times; {risk.impact}
         </div>
-        <div className="text-xs text-gray-500">Score: {score}</div>
       </td>
       <td className="border p-1 text-sm">
         <div>{risk.status}</div>
