@@ -13,6 +13,7 @@ export default function Settings() {
     endDate: '',
     riskPlan: '',
   });
+  const [errors, setErrors] = useState<Partial<Record<keyof ProjectMeta, string>>>({});
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -33,7 +34,20 @@ export default function Settings() {
     }
   }, [router.isReady, pid]);
 
+  const validate = () => {
+    const errs: Partial<Record<keyof ProjectMeta, string>> = {};
+    if (!form.projectName.trim()) errs.projectName = 'Title is required';
+    if (!form.startDate) errs.startDate = 'Start date is required';
+    if (!form.endDate) errs.endDate = 'End date is required';
+    if (form.startDate && form.endDate && form.startDate > form.endDate) {
+      errs.endDate = 'End date must be after start date';
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const save = () => {
+    if (!validate()) return;
     if (!router.isReady) return;
     const saved = typeof window !== 'undefined' && localStorage.getItem('projects');
     const projects: Project[] = saved ? JSON.parse(saved) : [];
@@ -60,6 +74,7 @@ export default function Settings() {
           value={form.projectName}
           onChange={(e) => setForm({ ...form, projectName: e.target.value })}
         />
+        {errors.projectName && <p className="text-red-500 text-sm">{errors.projectName}</p>}
 
         <label htmlFor="projectManager" className="block text-sm font-medium">
           Project Manager
@@ -91,6 +106,7 @@ export default function Settings() {
           value={form.startDate}
           onChange={(e) => setForm({ ...form, startDate: e.target.value })}
         />
+        {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate}</p>}
 
         <label htmlFor="endDate" className="block text-sm font-medium">
           End Date
@@ -102,6 +118,7 @@ export default function Settings() {
           value={form.endDate}
           onChange={(e) => setForm({ ...form, endDate: e.target.value })}
         />
+        {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate}</p>}
 
         <label htmlFor="riskPlan" className="block text-sm font-medium">
           Risk Management Plan

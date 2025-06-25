@@ -41,6 +41,9 @@ export default function ProjectHome() {
       if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
         setShowExportOptions(false);
       }
+      if (addRef.current && !addRef.current.contains(e.target as Node)) {
+        setShowAddOptions(false);
+      }
     };
     document.addEventListener('click', handler);
     return () => document.removeEventListener('click', handler);
@@ -126,7 +129,9 @@ export default function ProjectHome() {
   };
 
   const [showExportOptions, setShowExportOptions] = useState(false);
+  const [showAddOptions, setShowAddOptions] = useState(false);
   const exportRef = useRef<HTMLDivElement | null>(null);
+  const addRef = useRef<HTMLDivElement | null>(null);
 
   const fileInput = useRef<HTMLInputElement | null>(null);
 
@@ -193,14 +198,33 @@ export default function ProjectHome() {
       <nav className="bg-blue-950 text-white shadow">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold">Risk Manager</h1>
-          <div className="space-x-2">
-            <Link
-              href={`/project/${pid}/risk/new`}
-              title="Add a Risk"
-              className="border px-2 py-1 rounded hover:bg-gray-100 text-black bg-white"
-            >
-              Add +
-            </Link>
+          <div className="space-x-2 relative">
+            <div className="inline-block" ref={addRef}>
+              <button
+                onClick={() => setShowAddOptions((p) => !p)}
+                className="border px-2 py-1 rounded hover:bg-gray-100 text-black bg-white"
+              >
+                Add +
+              </button>
+              {showAddOptions && (
+                <div className="absolute right-0 mt-1 w-32 bg-white border rounded shadow z-10">
+                  <Link
+                    href={`/project/${pid}/risk/new`}
+                    className="block px-3 py-1 hover:bg-gray-100"
+                    onClick={() => setShowAddOptions(false)}
+                  >
+                    Risk
+                  </Link>
+                  <Link
+                    href="/projects"
+                    className="block px-3 py-1 hover:bg-gray-100"
+                    onClick={() => setShowAddOptions(false)}
+                  >
+                    Project
+                  </Link>
+                </div>
+              )}
+            </div>
             <Link
               href={`/project/${pid}/settings`}
               className="border px-2 py-1 rounded hover:bg-gray-100 text-black bg-white"
