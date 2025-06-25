@@ -276,7 +276,12 @@ export default function Home() {
       <nav className="bg-blue-950 text-white shadow">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold">Risk Register</h1>
-          <button onClick={() => setShowMeta(true)} className="border px-2 py-1 rounded bg-blue-800 hover:bg-blue-700">Project Data</button>
+          <button
+            onClick={() => setShowMeta(true)}
+            className="border px-2 py-1 rounded hover:bg-gray-100 text-black"
+          >
+            Project Data
+          </button>
         </div>
       </nav>
       <main className="container mx-auto p-4 space-y-6">
