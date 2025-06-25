@@ -358,6 +358,7 @@ export default function ProjectHome() {
                     )}
                   </div>
                 </th>
+                <th className="border p-1">Priority</th>
                 <th className="border p-1">Status / Dates</th>
                 <th className="border p-1">Actions</th>
               </tr>
