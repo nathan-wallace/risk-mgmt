@@ -40,13 +40,14 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
           new Date(r.dateIdentified) <= date &&
           r.status === status,
       );
-      const avg =
-        active.length === 0
-          ? 0
-          : active.reduce((s, r) => s + r.probability * r.impact, 0) / active.length;
-      return { date, value: avg };
+      return { date, value: active.length };
     });
   });
+
+  const maxCount = Math.max(
+    1,
+    ...series.flat().map((d) => d.value),
+  );
   // dimensions and scales
   const margin = { top: 20, right: 20, bottom: 60, left: 50 };
   const innerHeight = 300;
@@ -57,9 +58,15 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
     margin.left +
     ((date.getTime() - start.getTime()) / (end.getTime() - start.getTime())) *
       innerWidth;
-  const y = (score: number) =>
-    margin.top + innerHeight - (score / 25) * innerHeight;
+  const y = (count: number) =>
+    margin.top + innerHeight - (count / maxCount) * innerHeight;
   const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6'];
+  const tickStep = Math.max(1, Math.ceil(maxCount / 5));
+  const yTicks: number[] = [];
+  for (let i = 0; i <= maxCount; i += tickStep) {
+    yTicks.push(i);
+  }
+  if (yTicks[yTicks.length - 1] !== maxCount) yTicks.push(maxCount);
 
   return (
     <div className="overflow-auto">
@@ -95,7 +102,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
             stroke="#ddd"
           />
         ))}
-        {[5, 10, 15, 20, 25].map((s) => (
+        {yTicks.slice(1).map((s) => (
           <line
             key={`h-${s}`}
             x1={margin.left}
@@ -106,7 +113,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
           />
         ))}
         {/* y-axis labels */}
-        {[0, 5, 10, 15, 20, 25].map((s) => (
+        {yTicks.map((s) => (
           <g key={s}>
             <line
               x1={margin.left}
@@ -164,7 +171,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
           fontWeight="bold"
           transform={`rotate(-90 15 ${margin.top + innerHeight / 2})`}
         >
-          Risk Score
+          Number of Risks
         </text>
         {series.map((data, idx) => (
           <polyline
