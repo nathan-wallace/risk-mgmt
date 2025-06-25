@@ -7,6 +7,8 @@ export interface Risk {
   owner: string;
   mitigation: string;
   status: 'Open' | 'In-Progress' | 'Mitigated' | 'Accepted';
+  startDate: string; // ISO
+  endDate: string; // ISO
   dateIdentified: string; // ISO
   lastReviewed: string; // ISO
 }
