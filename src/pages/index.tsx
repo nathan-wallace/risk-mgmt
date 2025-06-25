@@ -45,6 +45,16 @@ export default function Home() {
     if (savedMeta) setMeta(JSON.parse(savedMeta));
   }, []);
 
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setShowExportOptions(false);
+      }
+    };
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, []);
+
   const validate = () => {
     const errs: Partial<Record<keyof RiskInput, string>> = {};
     if (!form.description.trim()) errs.description = 'Description is required';
@@ -152,11 +162,9 @@ export default function Home() {
     ? risks.filter((r) => r.probability === filter.prob && r.impact === filter.impact)
     : risks;
 
-  const [exportFormat, setExportFormat] = useState<'csv' | 'xlsx'>('xlsx');
-
-  const exportData = () => {
+  const exportData = (format: 'csv' | 'xlsx') => {
     const riskSheet = XLSX.utils.json_to_sheet(risks);
-    if (exportFormat === 'xlsx') {
+    if (format === 'xlsx') {
       const metaSheet = XLSX.utils.json_to_sheet([meta]);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, metaSheet, 'Meta');
@@ -182,6 +190,9 @@ export default function Home() {
       URL.revokeObjectURL(url);
     }
   };
+
+  const [showExportOptions, setShowExportOptions] = useState(false);
+  const exportRef = useRef<HTMLDivElement | null>(null);
 
   const fileInput = useRef<HTMLInputElement | null>(null);
 
@@ -250,7 +261,7 @@ export default function Home() {
       <nav className="bg-blue-950 text-white shadow">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold">Risk Register</h1>
-          <button onClick={() => setShowMeta(true)} className="border px-2 py-1 rounded bg-blue-800 hover:bg-blue-700">Project Meta Data</button>
+          <button onClick={() => setShowMeta(true)} className="border px-2 py-1 rounded bg-blue-800 hover:bg-blue-700">Project Data</button>
         </div>
       </nav>
       <main className="container mx-auto p-4 space-y-6">
@@ -407,15 +418,48 @@ export default function Home() {
             {filter && (
               <button onClick={() => setFilter(null)} className="border px-2 py-1 rounded hover:bg-gray-100">Clear Filter</button>
             )}
-            <select
-              value={exportFormat}
-              onChange={(e) => setExportFormat(e.target.value as 'csv' | 'xlsx')}
-              className="border px-1 py-1 rounded"
-            >
-              <option value="xlsx">Excel</option>
-              <option value="csv">CSV</option>
-            </select>
-            <button onClick={exportData} className="border px-2 py-1 rounded hover:bg-gray-100">Export</button>
+            <div className="relative inline-block" ref={exportRef}>
+              <button
+                onClick={() => setShowExportOptions((prev) => !prev)}
+                className="border px-2 py-1 rounded hover:bg-gray-100 flex items-center"
+              >
+                Export
+                <svg
+                  className="w-4 h-4 ml-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06-.02L10 10.78l3.71-3.59a.75.75 0 111.04 1.08l-4.23 4.09a.75.75 0 01-1.04 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+              {showExportOptions && (
+                <div className="absolute right-0 mt-1 w-28 bg-white border rounded shadow">
+                  <button
+                    onClick={() => {
+                      setShowExportOptions(false);
+                      exportData('xlsx');
+                    }}
+                    className="block w-full text-left px-3 py-1 hover:bg-gray-100"
+                  >
+                    Excel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowExportOptions(false);
+                      exportData('csv');
+                    }}
+                    className="block w-full text-left px-3 py-1 hover:bg-gray-100"
+                  >
+                    CSV
+                  </button>
+                </div>
+              )}
+            </div>
             <input
               type="file"
               accept=".xlsx,.csv"
@@ -423,7 +467,7 @@ export default function Home() {
               onChange={importFile}
               className="hidden"
             />
-            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1 rounded hover:bg-gray-100">Import File</button>
+            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1 rounded hover:bg-gray-100">Import</button>
           </div>
         </div>
         <table className="w-full border rounded">
@@ -458,7 +502,7 @@ export default function Home() {
       {showMeta && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded shadow w-80 space-y-2">
-            <h2 className="font-semibold text-lg">Project Meta Data</h2>
+            <h2 className="font-semibold text-lg">Project Data</h2>
             <label className="block text-sm font-medium">Project Name</label>
             <input className="border p-1 w-full" value={meta.projectName} onChange={(e) => setMeta({ ...meta, projectName: e.target.value })} />
             <label className="block text-sm font-medium">Project Manager</label>
