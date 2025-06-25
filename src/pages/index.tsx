@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Risk, RiskInput } from '@/types/risk';
+import { ProjectMeta } from '@/types/project';
+import * as XLSX from 'xlsx';
 
 export default function Home() {
   const [risks, setRisks] = useState<Risk[]>([]);
@@ -16,11 +18,20 @@ export default function Home() {
     dateIdentified: new Date().toISOString(),
   });
   const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
+  const [meta, setMeta] = useState<ProjectMeta>({
+    projectName: '',
+    projectManager: '',
+    sponsor: '',
+    startDate: '',
+    endDate: '',
+  });
+  const [showMeta, setShowMeta] = useState(false);
 
   useEffect(() => {
-    const saved = typeof window !== 'undefined' && localStorage.getItem('risks');
-    if (saved) {
-      setRisks(JSON.parse(saved));
+    const savedRisks = typeof window !== 'undefined' && localStorage.getItem('risks');
+    const savedMeta = typeof window !== 'undefined' && localStorage.getItem('projectMeta');
+    if (savedRisks) {
+      setRisks(JSON.parse(savedRisks));
     } else {
       fetch('/risks.json')
         .then((res) => res.json())
@@ -31,6 +42,7 @@ export default function Home() {
           }
         });
     }
+    if (savedMeta) setMeta(JSON.parse(savedMeta));
   }, []);
 
   const validate = () => {
@@ -51,6 +63,13 @@ export default function Home() {
     setRisks(items);
     if (typeof window !== 'undefined') {
       localStorage.setItem('risks', JSON.stringify(items));
+    }
+  };
+
+  const saveMeta = (data: ProjectMeta) => {
+    setMeta(data);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('projectMeta', JSON.stringify(data));
     }
   };
 
@@ -134,27 +153,17 @@ export default function Home() {
     : risks;
 
   const exportCSV = () => {
-    const headers = [
-      'id',
-      'description',
-      'category',
-      'probability',
-      'impact',
-      'owner',
-      'mitigation',
-      'status',
-      'dateIdentified',
-      'lastReviewed',
-    ] as const;
-    const rows = risks.map((r) =>
-      headers.map((h) => String(r[h])).join(',')
-    );
-    const csv = [headers.join(','), ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const riskSheet = XLSX.utils.json_to_sheet(risks);
+    const metaSheet = XLSX.utils.json_to_sheet([meta]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, metaSheet, 'Meta');
+    XLSX.utils.book_append_sheet(wb, riskSheet, 'Risks');
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'risks.csv';
+    a.download = 'risks.xlsx';
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -166,33 +175,40 @@ export default function Home() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      const text = String(reader.result);
-      const lines = text.trim().split(/\r?\n/);
-      if (lines.length < 2) return;
-      const headers = lines[0].split(',');
-      const records: Risk[] = lines.slice(1).map((l) => {
-        const values = l.split(',');
-        const row: Record<string, string> = {};
-        headers.forEach((h, idx) => (row[h.trim()] = values[idx]?.trim() || ''));
-        return {
-          id:
-            row.id || Date.now().toString() + Math.random().toString(16).slice(2),
-          description: row.description || '',
-          category: row.category || '',
-          probability: Number(row.probability) || 1,
-          impact: Number(row.impact) || 1,
-          owner: row.owner || '',
-          mitigation: row.mitigation || '',
-          status: (row.status as Risk['status']) || 'Open',
-          dateIdentified: row.dateIdentified || new Date().toISOString(),
-          lastReviewed: row.lastReviewed || new Date().toISOString(),
-        };
-      });
-      const updated = [...risks, ...records];
-      save(updated);
+      const data = new Uint8Array(reader.result as ArrayBuffer);
+      const wb = XLSX.read(data, { type: 'array' });
+      const riskSheet = wb.Sheets['Risks'];
+      const metaSheet = wb.Sheets['Meta'];
+      if (metaSheet) {
+        const metaData = XLSX.utils.sheet_to_json<ProjectMeta>(metaSheet)[0] as ProjectMeta;
+        if (metaData) saveMeta({
+          projectName: metaData.projectName || '',
+          projectManager: metaData.projectManager || '',
+          sponsor: metaData.sponsor || '',
+          startDate: metaData.startDate || '',
+          endDate: metaData.endDate || '',
+        });
+      }
+      if (riskSheet) {
+        const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(riskSheet);
+        const records: Risk[] = rows.map((r) => ({
+          id: (r['id'] as string) || Date.now().toString() + Math.random().toString(16).slice(2),
+          description: (r['description'] as string) || '',
+          category: (r['category'] as string) || '',
+          probability: Number(r['probability']) || 1,
+          impact: Number(r['impact']) || 1,
+          owner: (r['owner'] as string) || '',
+          mitigation: (r['mitigation'] as string) || '',
+          status: (r['status'] as Risk['status']) || 'Open',
+          dateIdentified: (r['dateIdentified'] as string) || new Date().toISOString(),
+          lastReviewed: (r['lastReviewed'] as string) || new Date().toISOString(),
+        }));
+        const updated = [...risks, ...records];
+        save(updated);
+      }
       e.target.value = '';
     };
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
   };
 
   const color = (score: number) => {
@@ -204,8 +220,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-blue-950 text-white shadow">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold">Risk Register</h1>
+          <button onClick={() => setShowMeta(true)} className="border px-2 py-1 rounded bg-blue-800 hover:bg-blue-700">Project Meta Data</button>
         </div>
       </nav>
       <main className="container mx-auto p-4 space-y-6">
@@ -362,15 +379,15 @@ export default function Home() {
             {filter && (
               <button onClick={() => setFilter(null)} className="border px-2 py-1 rounded hover:bg-gray-100">Clear Filter</button>
             )}
-            <button onClick={exportCSV} className="border px-2 py-1 rounded hover:bg-gray-100">Export CSV</button>
+            <button onClick={exportCSV} className="border px-2 py-1 rounded hover:bg-gray-100">Export XLSX</button>
             <input
               type="file"
-              accept=".csv"
+              accept=".xlsx"
               ref={fileInput}
               onChange={importCSV}
               className="hidden"
             />
-            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1 rounded hover:bg-gray-100">Import CSV</button>
+            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1 rounded hover:bg-gray-100">Import XLSX</button>
           </div>
         </div>
         <table className="w-full border rounded">
@@ -402,6 +419,27 @@ export default function Home() {
         </table>
       </div>
       </main>
+      {showMeta && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-4 rounded shadow w-80 space-y-2">
+            <h2 className="font-semibold text-lg">Project Meta Data</h2>
+            <label className="block text-sm font-medium">Project Name</label>
+            <input className="border p-1 w-full" value={meta.projectName} onChange={(e) => setMeta({ ...meta, projectName: e.target.value })} />
+            <label className="block text-sm font-medium">Project Manager</label>
+            <input className="border p-1 w-full" value={meta.projectManager} onChange={(e) => setMeta({ ...meta, projectManager: e.target.value })} />
+            <label className="block text-sm font-medium">Sponsor</label>
+            <input className="border p-1 w-full" value={meta.sponsor} onChange={(e) => setMeta({ ...meta, sponsor: e.target.value })} />
+            <label className="block text-sm font-medium">Start Date</label>
+            <input type="date" className="border p-1 w-full" value={meta.startDate} onChange={(e) => setMeta({ ...meta, startDate: e.target.value })} />
+            <label className="block text-sm font-medium">End Date</label>
+            <input type="date" className="border p-1 w-full" value={meta.endDate} onChange={(e) => setMeta({ ...meta, endDate: e.target.value })} />
+            <div className="space-x-2 pt-2 text-right">
+              <button onClick={() => { saveMeta(meta); setShowMeta(false); }} className="bg-indigo-600 text-white px-3 py-1 rounded">Save</button>
+              <button onClick={() => setShowMeta(false)} className="border px-3 py-1 rounded">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
