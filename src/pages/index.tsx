@@ -203,7 +203,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-indigo-600 text-white shadow">
+      <nav className="bg-blue-950 text-white shadow">
         <div className="container mx-auto px-4 py-3">
           <h1 className="text-xl font-semibold">Risk Register</h1>
         </div>
@@ -286,7 +286,7 @@ export default function Home() {
               <p className="text-red-500 text-sm">{errors.impact}</p>
             )}
             <div className="space-x-2">
-              <button onClick={submit} className="bg-blue-500 text-white px-3 py-1 rounded">
+              <button onClick={submit} className="bg-indigo-600 text-white px-3 py-1 rounded">
                 {editingId ? 'Update' : 'Add'}
               </button>
               {editingId && (
