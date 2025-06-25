@@ -319,7 +319,7 @@ export default function ProjectHome() {
               <tr className="bg-gray-100">
                 <th className="border p-1">ID</th>
                 <th className="border p-1">Risk</th>
-                <th className="border p-1">Score</th>
+                <th className="border p-1">Criticality</th>
                 <th className="border p-1">Status / Dates</th>
                 <th className="border p-1">Actions</th>
               </tr>
