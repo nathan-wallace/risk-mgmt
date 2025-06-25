@@ -39,12 +39,14 @@ export default function Home() {
       const parsed: Risk[] = JSON.parse(savedRisks);
       setRisks(
         parsed.map((r) => {
-          const anyRisk = r as Record<string, unknown>;
+          const anyRisk = r as unknown as Record<string, unknown>;
+          const di =
+            r.dateIdentified ||
+            (typeof anyRisk.startDate === 'string' ? anyRisk.startDate : '');
           return {
             ...r,
-            dateIdentified:
-              r.dateIdentified || anyRisk.startDate || new Date().toISOString(),
-            dateResolved: r.dateResolved || anyRisk.endDate || '',
+            dateIdentified: di || new Date().toISOString(),
+            dateResolved: r.dateResolved || '',
           };
         }),
       );
@@ -53,12 +55,14 @@ export default function Home() {
         .then((res) => res.json())
         .then((data: Risk[]) => {
           const mapped = data.map((r) => {
-            const anyRisk = r as Record<string, unknown>;
+            const anyRisk = r as unknown as Record<string, unknown>;
+            const di =
+              r.dateIdentified ||
+              (typeof anyRisk.startDate === 'string' ? anyRisk.startDate : '');
             return {
               ...r,
-              dateIdentified:
-                r.dateIdentified || anyRisk.startDate || new Date().toISOString(),
-              dateResolved: r.dateResolved || anyRisk.endDate || '',
+              dateIdentified: di || new Date().toISOString(),
+              dateResolved: r.dateResolved || '',
             };
           });
           setRisks(mapped);
@@ -327,7 +331,7 @@ export default function Home() {
           statusHistory: [],
           dateIdentified:
             (r['dateIdentified'] as string) || (r['startDate'] as string) || new Date().toISOString(),
-          dateResolved: (r['dateResolved'] as string) || (r['endDate'] as string) || '',
+          dateResolved: (r['dateResolved'] as string) || '',
           lastReviewed: (r['lastReviewed'] as string) || new Date().toISOString(),
         }));
         const updated = [...risks, ...records];
