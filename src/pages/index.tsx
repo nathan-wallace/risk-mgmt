@@ -134,22 +134,22 @@ export default function Home() {
     : risks;
 
   const exportCSV = () => {
-    const header = Object.keys(risks[0] || {}).join(',');
+    const headers = [
+      'id',
+      'description',
+      'category',
+      'probability',
+      'impact',
+      'owner',
+      'mitigation',
+      'status',
+      'dateIdentified',
+      'lastReviewed',
+    ] as const;
     const rows = risks.map((r) =>
-      [
-        r.id,
-        r.description,
-        r.category,
-        r.probability,
-        r.impact,
-        r.owner,
-        r.mitigation,
-        r.status,
-        r.dateIdentified,
-        r.lastReviewed,
-      ].join(',')
+      headers.map((h) => String(r[h])).join(',')
     );
-    const csv = [header, ...rows].join('\n');
+    const csv = [headers.join(','), ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
