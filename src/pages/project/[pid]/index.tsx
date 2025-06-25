@@ -238,8 +238,8 @@ export default function ProjectHome() {
       </nav>
       <main className="container mx-auto p-4 space-y-6">
         <ProjectDetailsPanel meta={meta} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-10 gap-4">
+          <div className="space-y-4 md:col-span-3">
             <AggregatedRiskPanel score={aggregatedScore} />
             <RiskMatrixPanel
               matrix={matrix}
@@ -247,7 +247,7 @@ export default function ProjectHome() {
               onCellClick={handleCellClick}
             />
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-white rounded-lg shadow p-4 md:col-span-7">
             <h2 className="font-semibold mb-2">Risk History Timeline</h2>
             <RiskHistoryTimeline risks={risks} project={meta} />
           </div>
