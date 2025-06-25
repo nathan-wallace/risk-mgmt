@@ -327,7 +327,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-blue-950 text-white shadow">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Risk Register</h1>
+          <h1 className="text-xl font-semibold">Risk Manager</h1>
           <button
             onClick={() => setShowMeta(true)}
             className="border px-2 py-1 rounded hover:bg-gray-100 text-black"
@@ -582,7 +582,7 @@ export default function Home() {
       </div>
       <div className="bg-white rounded-lg shadow p-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold">Risks</h2>
+          <h2 className="font-semibold">Risk Register</h2>
           <div className="space-x-2">
             {filter && (
               <button onClick={() => setFilter(null)} className="border px-2 py-1 rounded hover:bg-gray-100">Clear Filter</button>
