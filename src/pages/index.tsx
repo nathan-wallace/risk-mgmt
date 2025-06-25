@@ -50,6 +50,9 @@ export default function Home() {
       if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
         setShowExportOptions(false);
       }
+      if (scoreInfoRef.current && !scoreInfoRef.current.contains(e.target as Node)) {
+        setShowScoreInfo(false);
+      }
     };
     document.addEventListener('click', handler);
     return () => document.removeEventListener('click', handler);
@@ -202,6 +205,9 @@ export default function Home() {
 
   const [showExportOptions, setShowExportOptions] = useState(false);
   const exportRef = useRef<HTMLDivElement | null>(null);
+
+  const [showScoreInfo, setShowScoreInfo] = useState(false);
+  const scoreInfoRef = useRef<HTMLDivElement | null>(null);
 
   const fileInput = useRef<HTMLInputElement | null>(null);
 
@@ -387,10 +393,7 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow p-4 overflow-auto">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold">Risk Matrix</h2>
-            <div
-              className="flex items-center"
-              title="Aggregated score \u003E=15 high (red), 5-14 moderate (yellow), \u003C5 low (green)"
-            >
+            <div className="flex items-center">
               <h3 className="font-semibold mr-2">Aggregated Risk</h3>
               <span
                 className={`px-2 py-1 rounded text-sm font-semibold ${color(
@@ -399,6 +402,31 @@ export default function Home() {
               >
                 {aggregatedScore.toFixed(1)}
               </span>
+              <div className="relative inline-block ml-2" ref={scoreInfoRef}>
+                <button
+                  onClick={() => setShowScoreInfo((p) => !p)}
+                  className="text-gray-600 hover:text-black"
+                  aria-label="Aggregated score info"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+                {showScoreInfo && (
+                  <div className="absolute right-0 mt-1 w-64 bg-white border rounded shadow p-2 text-sm">
+                    Aggregated score is the average of each risk&apos;s probability multiplied by impact. Scores 15 or higher indicate high risk (red), 5–14 moderate (yellow), and below 5 low (green). This metric reflects the overall project risk severity.
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <table className="border-collapse rounded shadow">
