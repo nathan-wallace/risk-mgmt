@@ -16,7 +16,6 @@ export default function Home() {
     endDate: '',
     riskPlan: '',
   });
-  const [showMeta, setShowMeta] = useState(false);
 
   useEffect(() => {
     const savedRisks = typeof window !== 'undefined' && localStorage.getItem('risks');
@@ -245,12 +244,12 @@ export default function Home() {
             >
               Add +
             </Link>
-            <button
-              onClick={() => setShowMeta(true)}
+            <Link
+              href="/settings"
               className="border px-2 py-1 rounded hover:bg-gray-100 text-black bg-white"
             >
-              Project Data
-            </button>
+              Settings
+            </Link>
           </div>
         </div>
       </nav>
@@ -423,29 +422,6 @@ export default function Home() {
         </table>
       </div>
       </main>
-      {showMeta && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded shadow w-80 space-y-2">
-            <h2 className="font-semibold text-lg">Project Data</h2>
-            <label className="block text-sm font-medium">Project Name</label>
-            <input className="border p-1 w-full" value={meta.projectName} onChange={(e) => setMeta({ ...meta, projectName: e.target.value })} />
-            <label className="block text-sm font-medium">Project Manager</label>
-            <input className="border p-1 w-full" value={meta.projectManager} onChange={(e) => setMeta({ ...meta, projectManager: e.target.value })} />
-            <label className="block text-sm font-medium">Sponsor</label>
-            <input className="border p-1 w-full" value={meta.sponsor} onChange={(e) => setMeta({ ...meta, sponsor: e.target.value })} />
-            <label className="block text-sm font-medium">Start Date</label>
-            <input type="date" className="border p-1 w-full" value={meta.startDate} onChange={(e) => setMeta({ ...meta, startDate: e.target.value })} />
-            <label className="block text-sm font-medium">End Date</label>
-            <input type="date" className="border p-1 w-full" value={meta.endDate} onChange={(e) => setMeta({ ...meta, endDate: e.target.value })} />
-            <label className="block text-sm font-medium">Risk Management Plan</label>
-            <textarea className="border p-1 w-full" value={meta.riskPlan} onChange={(e) => setMeta({ ...meta, riskPlan: e.target.value })} />
-            <div className="space-x-2 pt-2 text-right">
-              <button onClick={() => { saveMeta(meta); setShowMeta(false); }} className="bg-indigo-600 text-white px-3 py-1 rounded">Save</button>
-              <button onClick={() => setShowMeta(false)} className="border px-3 py-1 rounded">Close</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
