@@ -49,7 +49,7 @@ export default function AggregatedRisk({ score }: Props) {
           </svg>
         </button>
         {showInfo && (
-          <div className="absolute right-0 mt-1 w-64 bg-white border rounded shadow p-2 text-sm">
+          <div className="absolute left-0 top-full mt-1 w-64 bg-white border rounded shadow p-2 text-sm z-10">
             Aggregated score is the average of each risk&apos;s probability multiplied by impact. Scores 15 or higher indicate high risk (red), 5–14 moderate (yellow), and below 5 low (green). This metric reflects the overall project risk severity.
           </div>
         )}
