@@ -34,8 +34,12 @@ export default function ProjectHome() {
     if (current) {
       setRisks(current.risks || []);
       setMeta(current.meta);
+    } else if (list.length > 0) {
+      router.replace(`/project/${list[list.length - 1].id}`);
+    } else {
+      router.replace('/projects');
     }
-  }, [router.isReady, pid]);
+  }, [router.isReady, pid, router]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
