@@ -387,13 +387,19 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow p-4 overflow-auto">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold">Risk Matrix</h2>
-            <span
-              className={`px-2 py-1 rounded text-sm font-semibold ${color(
-                aggregatedScore
-              )}`}
+            <div
+              className="flex items-center"
+              title="Aggregated score \u003E=15 high (red), 5-14 moderate (yellow), \u003C5 low (green)"
             >
-              {aggregatedScore.toFixed(1)}
-            </span>
+              <h3 className="font-semibold mr-2">Aggregated Risk</h3>
+              <span
+                className={`px-2 py-1 rounded text-sm font-semibold ${color(
+                  aggregatedScore
+                )}`}
+              >
+                {aggregatedScore.toFixed(1)}
+              </span>
+            </div>
           </div>
           <table className="border-collapse rounded shadow">
             <caption className="sr-only">Risk matrix showing number of risks for each probability and impact score</caption>
