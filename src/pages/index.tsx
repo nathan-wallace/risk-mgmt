@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Risk } from '@/types/risk';
 import { ProjectMeta } from '@/types/project';
 import RiskHistoryTimeline from '@/components/RiskHistoryTimeline';
+import RiskMatrix from '@/components/RiskMatrix';
+import AggregatedRisk from '@/components/AggregatedRisk';
 import * as XLSX from 'xlsx';
 
 export default function Home() {
@@ -73,9 +75,6 @@ export default function Home() {
     const handler = (e: MouseEvent) => {
       if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
         setShowExportOptions(false);
-      }
-      if (scoreInfoRef.current && !scoreInfoRef.current.contains(e.target as Node)) {
-        setShowScoreInfo(false);
       }
     };
     document.addEventListener('click', handler);
@@ -161,9 +160,6 @@ export default function Home() {
   const [showExportOptions, setShowExportOptions] = useState(false);
   const exportRef = useRef<HTMLDivElement | null>(null);
 
-  const [showScoreInfo, setShowScoreInfo] = useState(false);
-  const scoreInfoRef = useRef<HTMLDivElement | null>(null);
-
   const fileInput = useRef<HTMLInputElement | null>(null);
 
   const importFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -224,13 +220,6 @@ export default function Home() {
       reader.readAsArrayBuffer(file);
     }
   };
-
-  const color = (score: number) => {
-    if (score >= 15) return 'bg-red-500 text-white';
-    if (score >= 5) return 'bg-yellow-300';
-    return 'bg-green-300';
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-blue-950 text-white shadow">
@@ -255,85 +244,23 @@ export default function Home() {
       </nav>
       <main className="container mx-auto p-4 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg shadow p-4 overflow-auto">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="font-semibold">Risk Matrix</h2>
-            <div className="flex items-center">
-              <h3 className="font-semibold mr-1">Aggregated Risk</h3>
-              <div className="relative inline-block ml-1" ref={scoreInfoRef}>
-                <button
-                  onClick={() => setShowScoreInfo((p) => !p)}
-                  className="text-gray-600 hover:text-black"
-                  aria-label="Aggregated score info"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-                {showScoreInfo && (
-                  <div className="absolute right-0 mt-1 w-64 bg-white border rounded shadow p-2 text-sm">
-                    Aggregated score is the average of each risk&apos;s probability multiplied by impact. Scores 15 or higher indicate high risk (red), 5–14 moderate (yellow), and below 5 low (green). This metric reflects the overall project risk severity.
-                  </div>
-                )}
-              </div>
+          <div className="bg-white rounded-lg shadow p-4 overflow-auto space-y-4">
+            <div>
+              <h2 className="font-semibold mb-2">Risk Matrix</h2>
+              <RiskMatrix matrix={matrix} filter={filter} onCellClick={handleCellClick} />
+            </div>
+            <div>
+              <h2 className="font-semibold mb-2">Aggregated Risk</h2>
+              <AggregatedRisk score={aggregatedScore} />
             </div>
           </div>
-          <div className="flex items-start">
-            <table className="border-collapse rounded shadow">
-              <caption className="sr-only">Risk matrix showing number of risks for each probability and impact score</caption>
-            <tbody>
-              {Array.from({ length: 5 }, (_, i) => 5 - i).map((impact) => (
-                <tr key={impact}>
-                  {Array.from({ length: 5 }, (_, j) => j + 1).map((prob) => {
-                    const items = matrix[prob][impact];
-                    const score = prob * impact;
-                    const selected = filter && filter.prob === prob && filter.impact === impact;
-                    return (
-                      <td
-                        key={prob}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`Probability ${prob} Impact ${impact} contains ${items.length} risks`}
-                        onClick={() => handleCellClick(prob, impact)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            handleCellClick(prob, impact);
-                          }
-                        }}
-                        className={`w-12 h-12 border text-center cursor-pointer ${color(score)} ${selected ? 'ring-2 ring-black' : ''}`}
-                      >
-                        {items.length}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-            </table>
-            <div className="ml-4 flex flex-col items-start">
-              <span className={`mt-1 px-4 py-2 rounded text-2xl font-semibold ${color(aggregatedScore)}`}>
-                {aggregatedScore.toFixed(1)}
-              </span>
-            </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="font-semibold mb-2">Risk History Timeline</h2>
+            <RiskHistoryTimeline risks={risks} project={meta} />
           </div>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
-          <h2 className="font-semibold mb-2">Risk History Timeline</h2>
-          <RiskHistoryTimeline risks={risks} project={meta} />
-        </div>
-      </div>
-      <div className="bg-white rounded-lg shadow p-4">
-        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
           <h2 className="font-semibold">Risk Register</h2>
           <div className="space-x-2">
             {filter && (
