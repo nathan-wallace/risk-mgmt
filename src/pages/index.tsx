@@ -213,51 +213,74 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow p-4 space-y-2">
           <h2 className="font-semibold">{editingId ? 'Edit Risk' : 'Add Risk'}</h2>
           <div className="space-y-2">
+            <label htmlFor="description" className="block text-sm font-medium">
+              Description
+            </label>
             <input
+              id="description"
               className="border p-1 w-full"
-              placeholder="Description"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
             {errors.description && (
               <p className="text-red-500 text-sm">{errors.description}</p>
             )}
+            <label htmlFor="category" className="block text-sm font-medium">
+              Category
+            </label>
             <input
+              id="category"
               className="border p-1 w-full"
-              placeholder="Category"
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
             />
             {errors.category && (
               <p className="text-red-500 text-sm">{errors.category}</p>
             )}
+            <label htmlFor="owner" className="block text-sm font-medium">
+              Owner
+            </label>
             <input
+              id="owner"
               className="border p-1 w-full"
-              placeholder="Owner"
               value={form.owner}
               onChange={(e) => setForm({ ...form, owner: e.target.value })}
             />
             {errors.owner && (
               <p className="text-red-500 text-sm">{errors.owner}</p>
             )}
+            <label htmlFor="mitigation" className="block text-sm font-medium">
+              Mitigation
+            </label>
             <textarea
+              id="mitigation"
               className="border p-1 w-full"
-              placeholder="Mitigation"
               value={form.mitigation}
               onChange={(e) => setForm({ ...form, mitigation: e.target.value })}
             />
             {errors.mitigation && (
               <p className="text-red-500 text-sm">{errors.mitigation}</p>
             )}
-            <select className="border p-1 w-full" value={form.status} onChange={(e) => setForm({...form, status: e.target.value as Risk['status']})}>
+            <label htmlFor="status" className="block text-sm font-medium">
+              Status
+            </label>
+            <select
+              id="status"
+              className="border p-1 w-full"
+              value={form.status}
+              onChange={(e) =>
+                setForm({ ...form, status: e.target.value as Risk['status'] })
+              }
+            >
               <option>Open</option>
               <option>In-Progress</option>
               <option>Mitigated</option>
               <option>Accepted</option>
             </select>
             <div className="flex gap-2">
-              <label>Prob</label>
+              <label htmlFor="probability">Prob</label>
               <input
+                id="probability"
                 type="number"
                 min="1"
                 max="5"
@@ -267,8 +290,9 @@ export default function Home() {
                   setForm({ ...form, probability: Number(e.target.value) })
                 }
               />
-              <label>Impact</label>
+              <label htmlFor="impact">Impact</label>
               <input
+                id="impact"
                 type="number"
                 min="1"
                 max="5"
@@ -298,6 +322,7 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow p-4 overflow-auto">
           <h2 className="font-semibold">Risk Matrix</h2>
           <table className="border-collapse rounded shadow">
+            <caption className="sr-only">Risk matrix showing number of risks for each probability and impact score</caption>
             <tbody>
               {Array.from({ length: 5 }, (_, i) => 5 - i).map((impact) => (
                 <tr key={impact}>
@@ -308,7 +333,16 @@ export default function Home() {
                     return (
                       <td
                         key={prob}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Probability ${prob} Impact ${impact} contains ${items.length} risks`}
                         onClick={() => handleCellClick(prob, impact)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleCellClick(prob, impact);
+                          }
+                        }}
                         className={`w-12 h-12 border text-center cursor-pointer ${color(score)} ${selected ? 'ring-2 ring-black' : ''}`}
                       >
                         {items.length}
