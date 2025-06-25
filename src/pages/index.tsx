@@ -44,7 +44,7 @@ export default function Home() {
             ...r,
             dateIdentified:
               r.dateIdentified || anyRisk.startDate || new Date().toISOString(),
-            dateResolved: r.dateResolved || anyRisk.endDate || '',
+            dateResolved: r.dateResolved || '',
           };
         }),
       );
@@ -58,7 +58,7 @@ export default function Home() {
               ...r,
               dateIdentified:
                 r.dateIdentified || anyRisk.startDate || new Date().toISOString(),
-              dateResolved: r.dateResolved || anyRisk.endDate || '',
+              dateResolved: r.dateResolved || '',
             };
           });
           setRisks(mapped);
@@ -327,7 +327,7 @@ export default function Home() {
           statusHistory: [],
           dateIdentified:
             (r['dateIdentified'] as string) || (r['startDate'] as string) || new Date().toISOString(),
-          dateResolved: (r['dateResolved'] as string) || (r['endDate'] as string) || '',
+          dateResolved: (r['dateResolved'] as string) || '',
           lastReviewed: (r['lastReviewed'] as string) || new Date().toISOString(),
         }));
         const updated = [...risks, ...records];
