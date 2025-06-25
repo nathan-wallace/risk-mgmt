@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Risk, RiskInput } from '@/types/risk';
 import { ProjectMeta } from '@/types/project';
+import RiskHistoryTimeline from '@/components/RiskHistoryTimeline';
 import * as XLSX from 'xlsx';
 
 export default function Home() {
@@ -15,6 +16,8 @@ export default function Home() {
     owner: '',
     mitigation: '',
     status: 'Open',
+    startDate: new Date().toISOString(),
+    endDate: new Date().toISOString(),
     dateIdentified: new Date().toISOString(),
   });
   const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
@@ -31,7 +34,14 @@ export default function Home() {
     const savedRisks = typeof window !== 'undefined' && localStorage.getItem('risks');
     const savedMeta = typeof window !== 'undefined' && localStorage.getItem('projectMeta');
     if (savedRisks) {
-      setRisks(JSON.parse(savedRisks));
+      const parsed: Risk[] = JSON.parse(savedRisks);
+      setRisks(
+        parsed.map((r) => ({
+          ...r,
+          startDate: r.startDate || new Date().toISOString(),
+          endDate: r.endDate || new Date().toISOString(),
+        })),
+      );
     } else {
       fetch('/risks.json')
         .then((res) => res.json())
@@ -68,6 +78,10 @@ export default function Home() {
       errs.probability = 'Probability must be 1-5';
     if (form.impact < 1 || form.impact > 5)
       errs.impact = 'Impact must be 1-5';
+    if (!form.startDate) errs.startDate = 'Start date is required';
+    if (!form.endDate) errs.endDate = 'End date is required';
+    if (form.startDate && form.endDate && form.startDate > form.endDate)
+      errs.endDate = 'End date must be after start date';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -111,6 +125,8 @@ export default function Home() {
       owner: '',
       mitigation: '',
       status: 'Open',
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
       dateIdentified: new Date().toISOString(),
     });
     setEditingId(null);
@@ -122,7 +138,11 @@ export default function Home() {
     const { id: discardId, lastReviewed: discardLast, ...rest } = risk;
     void discardId;
     void discardLast;
-    setForm(rest);
+    setForm({
+      ...rest,
+      startDate: rest.startDate || new Date().toISOString(),
+      endDate: rest.endDate || new Date().toISOString(),
+    });
   };
 
   const cancelEdit = () => {
@@ -135,6 +155,8 @@ export default function Home() {
       owner: '',
       mitigation: '',
       status: 'Open',
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
       dateIdentified: new Date().toISOString(),
     });
     setErrors({});
@@ -250,6 +272,8 @@ export default function Home() {
           owner: (r['owner'] as string) || '',
           mitigation: (r['mitigation'] as string) || '',
           status: (r['status'] as Risk['status']) || 'Open',
+          startDate: (r['startDate'] as string) || new Date().toISOString(),
+          endDate: (r['endDate'] as string) || new Date().toISOString(),
           dateIdentified: (r['dateIdentified'] as string) || new Date().toISOString(),
           lastReviewed: (r['lastReviewed'] as string) || new Date().toISOString(),
         }));
@@ -353,6 +377,32 @@ export default function Home() {
               <option>Mitigated</option>
               <option>Accepted</option>
             </select>
+            <label htmlFor="startDate" className="block text-sm font-medium">
+              Start Date
+            </label>
+            <input
+              id="startDate"
+              type="date"
+              className="border p-1 w-full"
+              value={form.startDate ? form.startDate.split('T')[0] : ''}
+              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+            />
+            {errors.startDate && (
+              <p className="text-red-500 text-sm">{errors.startDate}</p>
+            )}
+            <label htmlFor="endDate" className="block text-sm font-medium">
+              End Date
+            </label>
+            <input
+              id="endDate"
+              type="date"
+              className="border p-1 w-full"
+              value={form.endDate ? form.endDate.split('T')[0] : ''}
+              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+            />
+            {errors.endDate && (
+              <p className="text-red-500 text-sm">{errors.endDate}</p>
+            )}
             <div className="flex gap-2">
               <label htmlFor="probability">Prob</label>
               <input
@@ -471,6 +521,10 @@ export default function Home() {
         </div>
       </div>
       <div className="bg-white rounded-lg shadow p-4">
+        <h2 className="font-semibold mb-2">Risk History Timeline</h2>
+        <RiskHistoryTimeline risks={risks} project={meta} />
+      </div>
+      <div className="bg-white rounded-lg shadow p-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold">Risks</h2>
           <div className="space-x-2">
@@ -531,14 +585,16 @@ export default function Home() {
         </div>
         <table className="w-full border rounded">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-1">ID</th>
-              <th className="border p-1">Description</th>
-              <th className="border p-1">Category</th>
-              <th className="border p-1">Prob</th>
-              <th className="border p-1">Impact</th>
-              <th className="border p-1">Actions</th>
-            </tr>
+          <tr className="bg-gray-100">
+            <th className="border p-1">ID</th>
+            <th className="border p-1">Description</th>
+            <th className="border p-1">Category</th>
+            <th className="border p-1">Prob</th>
+            <th className="border p-1">Impact</th>
+            <th className="border p-1">Start</th>
+            <th className="border p-1">End</th>
+            <th className="border p-1">Actions</th>
+          </tr>
           </thead>
           <tbody>
             {filteredRisks.map((r) => (
@@ -548,6 +604,8 @@ export default function Home() {
                 <td className="border p-1">{r.category}</td>
                 <td className="border p-1">{r.probability}</td>
                 <td className="border p-1">{r.impact}</td>
+                <td className="border p-1">{r.startDate ? r.startDate.split('T')[0] : ''}</td>
+                <td className="border p-1">{r.endDate ? r.endDate.split('T')[0] : ''}</td>
                 <td className="border p-1 space-x-2">
                   <button onClick={() => startEdit(r)} className="text-blue-600">Edit</button>
                   <button onClick={() => removeRisk(r.id)} className="text-red-600">Delete</button>

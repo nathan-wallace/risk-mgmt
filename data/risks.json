@@ -9,6 +9,8 @@
     "owner": "joe",
     "mitigation": "action plan",
     "status": "In-Progress",
+    "startDate": "2025-06-24",
+    "endDate": "2025-07-24",
     "dateIdentified": "2025-06-24T17:46:31.639Z"
   },
   {
@@ -21,6 +23,8 @@
     "owner": "",
     "mitigation": "",
     "status": "Open",
+    "startDate": "2025-06-24",
+    "endDate": "2025-07-24",
     "dateIdentified": "2025-06-24T17:47:07.215Z"
   },
   {
@@ -33,6 +37,8 @@
     "owner": "",
     "mitigation": "",
     "status": "Open",
+    "startDate": "2025-06-24",
+    "endDate": "2025-07-24",
     "dateIdentified": "2025-06-24T17:47:39.748Z"
   }
 ]
