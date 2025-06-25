@@ -161,7 +161,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
           fontSize="12"
           fontWeight="bold"
         >
-          Date
+          Risks
         </text>
         <text
           x={15}
