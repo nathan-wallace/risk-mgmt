@@ -3,50 +3,64 @@ import { useEffect, useState } from 'react';
 import { Risk, RiskInput } from '@/types/risk';
 import { Project } from '@/types/project';
 
+const emptyForm: RiskInput = {
+  description: '',
+  category: '',
+  probability: 1,
+  impact: 1,
+  owner: '',
+  mitigation: '',
+  response: 'Mitigate',
+  status: 'Open',
+  dateIdentified: new Date().toISOString(),
+  dateResolved: '',
+};
+
 export default function ManageRisk() {
   const router = useRouter();
   const { pid, id } = router.query as { pid?: string; id?: string };
 
   const [risks, setRisks] = useState<Risk[]>([]);
-  const [form, setForm] = useState<RiskInput>({
-    description: '',
-    category: '',
-    probability: 1,
-    impact: 1,
-    owner: '',
-    mitigation: '',
-    response: 'Mitigate',
-    status: 'Open',
-    dateIdentified: new Date().toISOString(),
-    dateResolved: '',
-  });
+  const [form, setForm] = useState<RiskInput>(emptyForm);
   const [statusNote, setStatusNote] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
 
   useEffect(() => {
     if (!router.isReady) return;
     const saved = typeof window !== 'undefined' && localStorage.getItem('projects');
-    if (saved) {
-      const projects: Project[] = JSON.parse(saved);
-      const proj = projects.find((p) => p.id === pid);
-      if (proj) {
-        setRisks(proj.risks);
-        if (id && id !== 'new') {
-          const risk = proj.risks.find((r) => r.id === id);
-          if (risk) {
-            const { id: discardId, lastReviewed: discardLast, statusHistory: discardHistory, ...rest } = risk;
-            void discardId;
-            void discardLast;
-            void discardHistory;
-            setForm({
-              ...rest,
-              dateIdentified: rest.dateIdentified || new Date().toISOString(),
-              dateResolved: rest.dateResolved || '',
-            });
-          }
-        }
+    if (!saved) {
+      setForm(emptyForm);
+      return;
+    }
+    const projects: Project[] = JSON.parse(saved);
+    const proj = projects.find((p) => p.id === pid);
+    if (!proj) {
+      setForm(emptyForm);
+      return;
+    }
+    setRisks(proj.risks);
+    if (id && id !== 'new') {
+      const risk = proj.risks.find((r) => r.id === id);
+      if (risk) {
+        const {
+          id: discardId,
+          lastReviewed: discardLast,
+          statusHistory: discardHistory,
+          ...rest
+        } = risk;
+        void discardId;
+        void discardLast;
+        void discardHistory;
+        setForm({
+          ...emptyForm,
+          ...rest,
+          dateIdentified: rest.dateIdentified || new Date().toISOString(),
+          dateResolved: rest.dateResolved || '',
+        });
+        return;
       }
     }
+    setForm(emptyForm);
   }, [router.isReady, pid, id]);
 
   const saveRisks = (items: Risk[]) => {
