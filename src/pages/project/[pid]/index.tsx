@@ -237,12 +237,12 @@ export default function ProjectHome() {
       <main className="container mx-auto p-4 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-4">
+            <AggregatedRiskPanel score={aggregatedScore} />
             <RiskMatrixPanel
               matrix={matrix}
               filter={filter}
               onCellClick={handleCellClick}
             />
-            <AggregatedRiskPanel score={aggregatedScore} />
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <h2 className="font-semibold mb-2">Risk History Timeline</h2>
