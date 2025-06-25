@@ -189,6 +189,7 @@ export default function ProjectHome() {
           impact: Number(r['impact']) || 1,
           owner: (r['owner'] as string) || '',
           mitigation: (r['mitigation'] as string) || '',
+          priority: (r['priority'] as Risk['priority']) || 'Medium',
           response: (r['response'] as Risk['response']) || 'Mitigate',
           status: (r['status'] as Risk['status']) || 'Open',
           statusHistory: [],
@@ -358,6 +359,7 @@ export default function ProjectHome() {
                     )}
                   </div>
                 </th>
+                <th className="border p-1">Priority</th>
                 <th className="border p-1">Status / Dates</th>
                 <th className="border p-1">Actions</th>
               </tr>

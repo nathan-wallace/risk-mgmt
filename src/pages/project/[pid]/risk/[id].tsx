@@ -10,6 +10,7 @@ const emptyForm: RiskInput = {
   impact: 1,
   owner: '',
   mitigation: '',
+  priority: 'Medium',
   response: 'Mitigate',
   status: 'Open',
   dateIdentified: new Date().toISOString(),
@@ -83,6 +84,7 @@ export default function ManageRisk() {
     if (!form.category.trim()) errs.category = 'Category is required';
     if (!form.owner.trim()) errs.owner = 'Owner is required';
     if (!form.mitigation.trim()) errs.mitigation = 'Mitigation is required';
+    if (!form.priority) errs.priority = 'Priority is required';
     if (!form.response) errs.response = 'Response is required';
     if (form.probability < 1 || form.probability > 5) errs.probability = 'Probability must be 1-5';
     if (form.impact < 1 || form.impact > 5) errs.impact = 'Impact must be 1-5';
@@ -195,6 +197,23 @@ export default function ManageRisk() {
           onChange={(e) => setForm({ ...form, mitigation: e.target.value })}
         />
         {errors.mitigation && <p className="text-red-500 text-sm">{errors.mitigation}</p>}
+
+        <label htmlFor="priority" className="block text-sm font-medium">
+          Priority
+        </label>
+        <select
+          id="priority"
+          className="border p-1 w-full"
+          value={form.priority}
+          onChange={(e) =>
+            setForm({ ...form, priority: e.target.value as Risk['priority'] })
+          }
+        >
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+        {errors.priority && <p className="text-red-500 text-sm">{errors.priority}</p>}
 
         <label htmlFor="response" className="block text-sm font-medium">
           Response

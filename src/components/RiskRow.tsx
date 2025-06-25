@@ -35,6 +35,7 @@ export default function RiskRow({ risk, pid, onDelete }: Props) {
           {score}
         </div>
       </td>
+      <td className="border p-1 text-center">{risk.priority}</td>
       <td className="border p-1 text-sm">
         <div>{risk.status}</div>
         <div className="text-xs text-gray-500">
