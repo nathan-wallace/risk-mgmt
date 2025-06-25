@@ -71,6 +71,7 @@ export default function ProjectHome() {
   };
 
   const removeRisk = (id: string) => {
+    if (!confirm('Are you sure you want to delete this risk?')) return;
     const updated = risks.filter((item) => item.id !== id);
     saveRisks(updated);
   };

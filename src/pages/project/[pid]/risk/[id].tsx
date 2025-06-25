@@ -114,6 +114,14 @@ export default function ManageRisk() {
     router.push(`/project/${pid}`);
   };
 
+  const remove = () => {
+    if (!id || id === 'new') return;
+    if (!confirm('Are you sure you want to delete this risk?')) return;
+    const updated = risks.filter((r) => r.id !== id);
+    saveRisks(updated);
+    router.push(`/project/${pid}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <h1 className="text-xl font-semibold mb-4">{id === 'new' ? 'Add Risk' : 'Edit Risk'}</h1>
@@ -256,6 +264,14 @@ export default function ManageRisk() {
           <button onClick={submit} className="bg-indigo-600 text-white px-3 py-1 rounded">
             {id === 'new' ? 'Add' : 'Update'}
           </button>
+          {id !== 'new' && (
+            <button
+              onClick={remove}
+              className="border px-3 py-1 rounded text-red-600"
+            >
+              Delete
+            </button>
+          )}
           <button onClick={() => router.push(`/project/${pid}`)} className="border px-3 py-1 rounded">
             Cancel
           </button>
