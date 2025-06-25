@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Risk } from '@/types/risk';
 import { ProjectMeta, Project } from '@/types/project';
 import RiskHistoryTimeline from '@/components/RiskHistoryTimeline';
-import RiskMatrix from '@/components/RiskMatrix';
-import AggregatedRisk from '@/components/AggregatedRisk';
+import RiskMatrixPanel from '@/components/RiskMatrixPanel';
+import AggregatedRiskPanel from '@/components/AggregatedRiskPanel';
 import * as XLSX from 'xlsx';
 
 export default function ProjectHome() {
@@ -212,15 +212,15 @@ export default function ProjectHome() {
       </nav>
       <main className="container mx-auto p-4 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white rounded-lg shadow p-4 overflow-auto">
-            <h2 className="font-semibold mb-2">Risk Matrix</h2>
-            <RiskMatrix matrix={matrix} filter={filter} onCellClick={handleCellClick} />
+          <div className="space-y-4">
+            <RiskMatrixPanel
+              matrix={matrix}
+              filter={filter}
+              onCellClick={handleCellClick}
+            />
+            <AggregatedRiskPanel score={aggregatedScore} />
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <h2 className="font-semibold mb-2">Aggregated Risk</h2>
-            <AggregatedRisk score={aggregatedScore} />
-          </div>
-          <div className="md:col-span-2 bg-white rounded-lg shadow p-4">
             <h2 className="font-semibold mb-2">Risk History Timeline</h2>
             <RiskHistoryTimeline risks={risks} project={meta} />
           </div>
