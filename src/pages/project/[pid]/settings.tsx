@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { ProjectMeta } from '@/types/project';
+import { ProjectMeta, Project } from '@/types/project';
 
 export default function Settings() {
   const router = useRouter();
+  const { pid } = router.query as { pid?: string };
   const [form, setForm] = useState<ProjectMeta>({
     projectName: '',
     projectManager: '',
@@ -14,25 +15,36 @@ export default function Settings() {
   });
 
   useEffect(() => {
-    const saved = typeof window !== 'undefined' && localStorage.getItem('projectMeta');
+    if (!router.isReady) return;
+    const saved = typeof window !== 'undefined' && localStorage.getItem('projects');
     if (saved) {
-      const parsed: ProjectMeta = JSON.parse(saved);
-      setForm({
-        projectName: parsed.projectName || '',
-        projectManager: parsed.projectManager || '',
-        sponsor: parsed.sponsor || '',
-        startDate: parsed.startDate || '',
-        endDate: parsed.endDate || '',
-        riskPlan: parsed.riskPlan || '',
-      });
+      const projects: Project[] = JSON.parse(saved);
+      const proj = projects.find((p) => p.id === pid);
+      if (proj) {
+        setForm({
+          projectName: proj.meta.projectName || '',
+          projectManager: proj.meta.projectManager || '',
+          sponsor: proj.meta.sponsor || '',
+          startDate: proj.meta.startDate || '',
+          endDate: proj.meta.endDate || '',
+          riskPlan: proj.meta.riskPlan || '',
+        });
+      }
     }
-  }, []);
+  }, [router.isReady, pid]);
 
   const save = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('projectMeta', JSON.stringify(form));
+    if (!router.isReady) return;
+    const saved = typeof window !== 'undefined' && localStorage.getItem('projects');
+    const projects: Project[] = saved ? JSON.parse(saved) : [];
+    const idx = projects.findIndex((p) => p.id === pid);
+    if (idx >= 0) {
+      projects[idx].meta = form;
+    } else {
+      projects.push({ id: pid as string, meta: form, risks: [] });
     }
-    router.push('/');
+    localStorage.setItem('projects', JSON.stringify(projects));
+    router.push(`/project/${pid}`);
   };
 
   return (
@@ -105,7 +117,7 @@ export default function Settings() {
           <button onClick={save} className="bg-indigo-600 text-white px-3 py-1 rounded">
             Save
           </button>
-          <button onClick={() => router.push('/')} className="border px-3 py-1 rounded">
+          <button onClick={() => router.push(`/project/${pid}`)} className="border px-3 py-1 rounded">
             Cancel
           </button>
         </div>
