@@ -34,7 +34,14 @@ export default function Home() {
     const savedRisks = typeof window !== 'undefined' && localStorage.getItem('risks');
     const savedMeta = typeof window !== 'undefined' && localStorage.getItem('projectMeta');
     if (savedRisks) {
-      setRisks(JSON.parse(savedRisks));
+      const parsed: Risk[] = JSON.parse(savedRisks);
+      setRisks(
+        parsed.map((r) => ({
+          ...r,
+          startDate: r.startDate || new Date().toISOString(),
+          endDate: r.endDate || new Date().toISOString(),
+        })),
+      );
     } else {
       fetch('/risks.json')
         .then((res) => res.json())
@@ -131,7 +138,11 @@ export default function Home() {
     const { id: discardId, lastReviewed: discardLast, ...rest } = risk;
     void discardId;
     void discardLast;
-    setForm(rest);
+    setForm({
+      ...rest,
+      startDate: rest.startDate || new Date().toISOString(),
+      endDate: rest.endDate || new Date().toISOString(),
+    });
   };
 
   const cancelEdit = () => {
@@ -373,7 +384,7 @@ export default function Home() {
               id="startDate"
               type="date"
               className="border p-1 w-full"
-              value={form.startDate.split('T')[0]}
+              value={form.startDate ? form.startDate.split('T')[0] : ''}
               onChange={(e) => setForm({ ...form, startDate: e.target.value })}
             />
             {errors.startDate && (
@@ -386,7 +397,7 @@ export default function Home() {
               id="endDate"
               type="date"
               className="border p-1 w-full"
-              value={form.endDate.split('T')[0]}
+              value={form.endDate ? form.endDate.split('T')[0] : ''}
               onChange={(e) => setForm({ ...form, endDate: e.target.value })}
             />
             {errors.endDate && (
@@ -593,8 +604,8 @@ export default function Home() {
                 <td className="border p-1">{r.category}</td>
                 <td className="border p-1">{r.probability}</td>
                 <td className="border p-1">{r.impact}</td>
-                <td className="border p-1">{r.startDate.split('T')[0]}</td>
-                <td className="border p-1">{r.endDate.split('T')[0]}</td>
+                <td className="border p-1">{r.startDate ? r.startDate.split('T')[0] : ''}</td>
+                <td className="border p-1">{r.endDate ? r.endDate.split('T')[0] : ''}</td>
                 <td className="border p-1 space-x-2">
                   <button onClick={() => startEdit(r)} className="text-blue-600">Edit</button>
                   <button onClick={() => removeRisk(r.id)} className="text-red-600">Delete</button>

@@ -34,7 +34,12 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
   const series = statuses.map((status) => {
     return dates.map((date) => {
       const active = risks.filter(
-        (r) => new Date(r.startDate) <= date && new Date(r.endDate) >= date && r.status === status,
+        (r) =>
+          r.startDate &&
+          r.endDate &&
+          new Date(r.startDate) <= date &&
+          new Date(r.endDate) >= date &&
+          r.status === status,
       );
       const avg =
         active.length === 0
