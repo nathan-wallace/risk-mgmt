@@ -161,7 +161,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
           fontSize="12"
           fontWeight="bold"
         >
-          Risks
+          Date
         </text>
         <text
           x={15}
@@ -171,7 +171,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
           fontWeight="bold"
           transform={`rotate(-90 15 ${margin.top + innerHeight / 2})`}
         >
-          Number of Risks
+          Risks
         </text>
         {series.map((data, idx) => (
           <polyline
