@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Risk, RiskInput } from '@/types/risk';
+import { Project } from '@/types/project';
 
 export default function ManageRisk() {
   const router = useRouter();
-  const { id } = router.query;
+  const { pid, id } = router.query as { pid?: string; id?: string };
 
   const [risks, setRisks] = useState<Risk[]>([]);
   const [form, setForm] = useState<RiskInput>({
@@ -24,31 +25,39 @@ export default function ManageRisk() {
 
   useEffect(() => {
     if (!router.isReady) return;
-    const saved = typeof window !== 'undefined' && localStorage.getItem('risks');
+    const saved = typeof window !== 'undefined' && localStorage.getItem('projects');
     if (saved) {
-      const parsed: Risk[] = JSON.parse(saved);
-      setRisks(parsed);
-      if (id && id !== 'new') {
-        const risk = parsed.find((r) => r.id === id);
-        if (risk) {
-          const { id: discardId, lastReviewed: discardLast, statusHistory: discardHistory, ...rest } = risk;
-          void discardId;
-          void discardLast;
-          void discardHistory;
-          setForm({
-            ...rest,
-            dateIdentified: rest.dateIdentified || new Date().toISOString(),
-            dateResolved: rest.dateResolved || '',
-          });
+      const projects: Project[] = JSON.parse(saved);
+      const proj = projects.find((p) => p.id === pid);
+      if (proj) {
+        setRisks(proj.risks);
+        if (id && id !== 'new') {
+          const risk = proj.risks.find((r) => r.id === id);
+          if (risk) {
+            const { id: discardId, lastReviewed: discardLast, statusHistory: discardHistory, ...rest } = risk;
+            void discardId;
+            void discardLast;
+            void discardHistory;
+            setForm({
+              ...rest,
+              dateIdentified: rest.dateIdentified || new Date().toISOString(),
+              dateResolved: rest.dateResolved || '',
+            });
+          }
         }
       }
     }
-  }, [router.isReady, id]);
+  }, [router.isReady, pid, id]);
 
-  const save = (items: Risk[]) => {
+  const saveRisks = (items: Risk[]) => {
     setRisks(items);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('risks', JSON.stringify(items));
+    if (!router.isReady) return;
+    const saved = typeof window !== 'undefined' && localStorage.getItem('projects');
+    const projects: Project[] = saved ? JSON.parse(saved) : [];
+    const idx = projects.findIndex((p) => p.id === pid);
+    if (idx >= 0) {
+      projects[idx].risks = items;
+      localStorage.setItem('projects', JSON.stringify(projects));
     }
   };
 
@@ -59,16 +68,10 @@ export default function ManageRisk() {
     if (!form.owner.trim()) errs.owner = 'Owner is required';
     if (!form.mitigation.trim()) errs.mitigation = 'Mitigation is required';
     if (!form.response) errs.response = 'Response is required';
-    if (form.probability < 1 || form.probability > 5)
-      errs.probability = 'Probability must be 1-5';
-    if (form.impact < 1 || form.impact > 5)
-      errs.impact = 'Impact must be 1-5';
+    if (form.probability < 1 || form.probability > 5) errs.probability = 'Probability must be 1-5';
+    if (form.impact < 1 || form.impact > 5) errs.impact = 'Impact must be 1-5';
     if (!form.dateIdentified) errs.dateIdentified = 'Date Identified is required';
-    if (
-      form.dateResolved &&
-      form.dateIdentified &&
-      form.dateIdentified > form.dateResolved
-    )
+    if (form.dateResolved && form.dateIdentified && form.dateIdentified > form.dateResolved)
       errs.dateResolved = 'Date Resolved must be after Date Identified';
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -92,7 +95,7 @@ export default function ManageRisk() {
         lastReviewed: new Date().toISOString(),
         statusHistory: history,
       };
-      save(risks.map((r) => (r.id === updated.id ? updated : r)));
+      saveRisks(risks.map((r) => (r.id === updated.id ? updated : r)));
     } else {
       const newRisk: Risk = {
         id: Date.now().toString(),
@@ -106,9 +109,9 @@ export default function ManageRisk() {
           },
         ],
       };
-      save([...risks, newRisk]);
+      saveRisks([...risks, newRisk]);
     }
-    router.push('/');
+    router.push(`/project/${pid}`);
   };
 
   return (
@@ -253,10 +256,11 @@ export default function ManageRisk() {
           <button onClick={submit} className="bg-indigo-600 text-white px-3 py-1 rounded">
             {id === 'new' ? 'Add' : 'Update'}
           </button>
-          <button onClick={() => router.push('/')} className="border px-3 py-1 rounded">Cancel</button>
+          <button onClick={() => router.push(`/project/${pid}`)} className="border px-3 py-1 rounded">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
