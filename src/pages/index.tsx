@@ -152,42 +152,66 @@ export default function Home() {
     ? risks.filter((r) => r.probability === filter.prob && r.impact === filter.impact)
     : risks;
 
-  const exportCSV = () => {
+  const [exportFormat, setExportFormat] = useState<'csv' | 'xlsx'>('xlsx');
+
+  const exportData = () => {
     const riskSheet = XLSX.utils.json_to_sheet(risks);
-    const metaSheet = XLSX.utils.json_to_sheet([meta]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, metaSheet, 'Meta');
-    XLSX.utils.book_append_sheet(wb, riskSheet, 'Risks');
-    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'risks.xlsx';
-    a.click();
-    URL.revokeObjectURL(url);
+    if (exportFormat === 'xlsx') {
+      const metaSheet = XLSX.utils.json_to_sheet([meta]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, metaSheet, 'Meta');
+      XLSX.utils.book_append_sheet(wb, riskSheet, 'Risks');
+      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([wbout], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'risks.xlsx';
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      const csv = XLSX.utils.sheet_to_csv(riskSheet);
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'risks.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   };
 
   const fileInput = useRef<HTMLInputElement | null>(null);
 
-  const importCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const importFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const ext = file.name.split('.').pop()?.toLowerCase();
     const reader = new FileReader();
     reader.onload = () => {
-      const data = new Uint8Array(reader.result as ArrayBuffer);
-      const wb = XLSX.read(data, { type: 'array' });
-      const riskSheet = wb.Sheets['Risks'];
+      let wb: XLSX.WorkBook | null = null;
+      if (ext === 'csv') {
+        wb = XLSX.read(reader.result as string, { type: 'string' });
+      } else {
+        const data = new Uint8Array(reader.result as ArrayBuffer);
+        wb = XLSX.read(data, { type: 'array' });
+      }
+      if (!wb) return;
+      const riskSheet = wb.Sheets['Risks'] || wb.Sheets[wb.SheetNames[0]];
       const metaSheet = wb.Sheets['Meta'];
       if (metaSheet) {
         const metaData = XLSX.utils.sheet_to_json<ProjectMeta>(metaSheet)[0] as ProjectMeta;
-        if (metaData) saveMeta({
-          projectName: metaData.projectName || '',
-          projectManager: metaData.projectManager || '',
-          sponsor: metaData.sponsor || '',
-          startDate: metaData.startDate || '',
-          endDate: metaData.endDate || '',
-        });
+        if (metaData) {
+          saveMeta({
+            projectName: metaData.projectName || '',
+            projectManager: metaData.projectManager || '',
+            sponsor: metaData.sponsor || '',
+            startDate: metaData.startDate || '',
+            endDate: metaData.endDate || '',
+          });
+        }
       }
       if (riskSheet) {
         const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(riskSheet);
@@ -208,7 +232,11 @@ export default function Home() {
       }
       e.target.value = '';
     };
-    reader.readAsArrayBuffer(file);
+    if (ext === 'csv') {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
   };
 
   const color = (score: number) => {
@@ -379,15 +407,23 @@ export default function Home() {
             {filter && (
               <button onClick={() => setFilter(null)} className="border px-2 py-1 rounded hover:bg-gray-100">Clear Filter</button>
             )}
-            <button onClick={exportCSV} className="border px-2 py-1 rounded hover:bg-gray-100">Export XLSX</button>
+            <select
+              value={exportFormat}
+              onChange={(e) => setExportFormat(e.target.value as 'csv' | 'xlsx')}
+              className="border px-1 py-1 rounded"
+            >
+              <option value="xlsx">Excel</option>
+              <option value="csv">CSV</option>
+            </select>
+            <button onClick={exportData} className="border px-2 py-1 rounded hover:bg-gray-100">Export</button>
             <input
               type="file"
-              accept=".xlsx"
+              accept=".xlsx,.csv"
               ref={fileInput}
-              onChange={importCSV}
+              onChange={importFile}
               className="hidden"
             />
-            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1 rounded hover:bg-gray-100">Import XLSX</button>
+            <button onClick={() => fileInput.current?.click()} className="border px-2 py-1 rounded hover:bg-gray-100">Import File</button>
           </div>
         </div>
         <table className="w-full border rounded">

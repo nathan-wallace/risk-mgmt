@@ -19,7 +19,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-The application supports exporting the current register to CSV and importing additional risks from a CSV file using the buttons on the main page.
+The application supports exporting the current register to either Excel or CSV and importing additional risks from either format using the buttons on the main page.
 
 [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
