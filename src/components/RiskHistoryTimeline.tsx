@@ -47,18 +47,46 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
       return { date, value: avg };
     });
   });
+  // intrinsic dimensions for viewBox calculations
   const width = 600;
   const height = 300;
   const x = (score: number) => (score / 25) * width;
-  const y = (date: Date) => ((date.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * height;
+  const y = (date: Date) =>
+    ((date.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * height;
   const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6'];
 
   return (
     <div className="overflow-auto">
-      <svg width={width} height={height} className="border">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="border w-full h-auto"
+        preserveAspectRatio="xMidYMid meet"
+        style={{ maxHeight: height }}
+      >
         {/* axes */}
         <line x1={0} y1={0} x2={0} y2={height} stroke="#000" />
         <line x1={0} y1={height} x2={width} y2={height} stroke="#000" />
+        {/* grid lines */}
+        {dates.slice(1).map((d, i) => (
+          <line
+            key={`h-${i}`}
+            x1={0}
+            y1={y(d)}
+            x2={width}
+            y2={y(d)}
+            stroke="#ddd"
+          />
+        ))}
+        {[5, 10, 15, 20, 25].map((s) => (
+          <line
+            key={`v-${s}`}
+            x1={x(s)}
+            y1={0}
+            x2={x(s)}
+            y2={height}
+            stroke="#ddd"
+          />
+        ))}
         {/* y-axis labels */}
         {dates.map((d, i) => (
           <g key={i}>
@@ -77,6 +105,26 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
             </text>
           </g>
         ))}
+        {/* axis titles */}
+        <text
+          x={width / 2}
+          y={height + 35}
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="bold"
+        >
+          Risk Score
+        </text>
+        <text
+          x={-40}
+          y={height / 2}
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="bold"
+          transform={`rotate(-90 -40 ${height / 2})`}
+        >
+          Date
+        </text>
         {series.map((data, idx) => (
           <polyline
             key={statuses[idx]}
