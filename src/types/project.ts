@@ -4,4 +4,5 @@ export interface ProjectMeta {
   sponsor: string;
   startDate: string; // ISO
   endDate: string; // ISO
+  riskPlan: string;
 }

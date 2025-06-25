@@ -29,6 +29,7 @@ export default function Home() {
     sponsor: '',
     startDate: '',
     endDate: '',
+    riskPlan: '',
   });
   const [showMeta, setShowMeta] = useState(false);
 
@@ -54,7 +55,17 @@ export default function Home() {
           }
         });
     }
-    if (savedMeta) setMeta(JSON.parse(savedMeta));
+    if (savedMeta) {
+      const parsed: ProjectMeta = JSON.parse(savedMeta);
+      setMeta({
+        projectName: parsed.projectName || '',
+        projectManager: parsed.projectManager || '',
+        sponsor: parsed.sponsor || '',
+        startDate: parsed.startDate || '',
+        endDate: parsed.endDate || '',
+        riskPlan: parsed.riskPlan || '',
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -284,6 +295,7 @@ export default function Home() {
             sponsor: metaData.sponsor || '',
             startDate: metaData.startDate || '',
             endDate: metaData.endDate || '',
+            riskPlan: metaData.riskPlan || '',
           });
         }
       }
@@ -686,6 +698,8 @@ export default function Home() {
             <input type="date" className="border p-1 w-full" value={meta.startDate} onChange={(e) => setMeta({ ...meta, startDate: e.target.value })} />
             <label className="block text-sm font-medium">End Date</label>
             <input type="date" className="border p-1 w-full" value={meta.endDate} onChange={(e) => setMeta({ ...meta, endDate: e.target.value })} />
+            <label className="block text-sm font-medium">Risk Management Plan</label>
+            <textarea className="border p-1 w-full" value={meta.riskPlan} onChange={(e) => setMeta({ ...meta, riskPlan: e.target.value })} />
             <div className="space-x-2 pt-2 text-right">
               <button onClick={() => { saveMeta(meta); setShowMeta(false); }} className="bg-indigo-600 text-white px-3 py-1 rounded">Save</button>
               <button onClick={() => setShowMeta(false)} className="border px-3 py-1 rounded">Close</button>
