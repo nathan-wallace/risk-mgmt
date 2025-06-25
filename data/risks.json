@@ -9,6 +9,14 @@
     "owner": "joe",
     "mitigation": "action plan",
     "status": "In-Progress",
+    "response": "Mitigate",
+    "statusHistory": [
+      {
+        "date": "2025-06-24T17:47:07.213Z",
+        "status": "In-Progress",
+        "note": "Initial entry"
+      }
+    ],
     "startDate": "2025-06-24",
     "endDate": "2025-07-24",
     "dateIdentified": "2025-06-24T17:46:31.639Z"
@@ -23,6 +31,14 @@
     "owner": "",
     "mitigation": "",
     "status": "Open",
+    "response": "Accept",
+    "statusHistory": [
+      {
+        "date": "2025-06-24T17:47:39.747Z",
+        "status": "Open",
+        "note": "Initial entry"
+      }
+    ],
     "startDate": "2025-06-24",
     "endDate": "2025-07-24",
     "dateIdentified": "2025-06-24T17:47:07.215Z"
@@ -37,6 +53,14 @@
     "owner": "",
     "mitigation": "",
     "status": "Open",
+    "response": "Transfer",
+    "statusHistory": [
+      {
+        "date": "2025-06-24T17:47:40.239Z",
+        "status": "Open",
+        "note": "Initial entry"
+      }
+    ],
     "startDate": "2025-06-24",
     "endDate": "2025-07-24",
     "dateIdentified": "2025-06-24T17:47:39.748Z"

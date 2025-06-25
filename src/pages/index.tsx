@@ -15,11 +15,13 @@ export default function Home() {
     impact: 1,
     owner: '',
     mitigation: '',
+    response: 'Mitigate',
     status: 'Open',
     startDate: new Date().toISOString(),
     endDate: new Date().toISOString(),
     dateIdentified: new Date().toISOString(),
   });
+  const [statusNote, setStatusNote] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
   const [meta, setMeta] = useState<ProjectMeta>({
     projectName: '',
@@ -74,6 +76,7 @@ export default function Home() {
     if (!form.category.trim()) errs.category = 'Category is required';
     if (!form.owner.trim()) errs.owner = 'Owner is required';
     if (!form.mitigation.trim()) errs.mitigation = 'Mitigation is required';
+    if (!form.response) errs.response = 'Response is required';
     if (form.probability < 1 || form.probability > 5)
       errs.probability = 'Probability must be 1-5';
     if (form.impact < 1 || form.impact > 5)
@@ -103,10 +106,20 @@ export default function Home() {
   const submit = () => {
     if (!validate()) return;
     if (editingId) {
+      const existing = risks.find((r) => r.id === editingId)!;
+      const history = [...existing.statusHistory];
+      if (existing.status !== form.status || statusNote.trim()) {
+        history.push({
+          date: new Date().toISOString(),
+          status: form.status,
+          note: statusNote,
+        });
+      }
       const updated: Risk = {
-        ...risks.find((r) => r.id === editingId)!,
+        ...existing,
         ...form,
         lastReviewed: new Date().toISOString(),
+        statusHistory: history,
       };
       save(risks.map((item) => (item.id === updated.id ? updated : item)));
     } else {
@@ -114,6 +127,13 @@ export default function Home() {
         id: Date.now().toString(),
         lastReviewed: new Date().toISOString(),
         ...form,
+        statusHistory: [
+          {
+            date: new Date().toISOString(),
+            status: form.status,
+            note: statusNote,
+          },
+        ],
       };
       save([...risks, newRisk]);
     }
@@ -124,25 +144,29 @@ export default function Home() {
       impact: 1,
       owner: '',
       mitigation: '',
+      response: 'Mitigate',
       status: 'Open',
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
       dateIdentified: new Date().toISOString(),
     });
+    setStatusNote('');
     setEditingId(null);
     setErrors({});
   };
 
   const startEdit = (risk: Risk) => {
     setEditingId(risk.id);
-    const { id: discardId, lastReviewed: discardLast, ...rest } = risk;
+    const { id: discardId, lastReviewed: discardLast, statusHistory: discardHistory, ...rest } = risk;
     void discardId;
     void discardLast;
+    void discardHistory;
     setForm({
       ...rest,
       startDate: rest.startDate || new Date().toISOString(),
       endDate: rest.endDate || new Date().toISOString(),
     });
+    setStatusNote('');
   };
 
   const cancelEdit = () => {
@@ -154,11 +178,13 @@ export default function Home() {
       impact: 1,
       owner: '',
       mitigation: '',
+      response: 'Mitigate',
       status: 'Open',
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
       dateIdentified: new Date().toISOString(),
     });
+    setStatusNote('');
     setErrors({});
   };
 
@@ -271,7 +297,9 @@ export default function Home() {
           impact: Number(r['impact']) || 1,
           owner: (r['owner'] as string) || '',
           mitigation: (r['mitigation'] as string) || '',
+          response: (r['response'] as Risk['response']) || 'Mitigate',
           status: (r['status'] as Risk['status']) || 'Open',
+          statusHistory: [],
           startDate: (r['startDate'] as string) || new Date().toISOString(),
           endDate: (r['endDate'] as string) || new Date().toISOString(),
           dateIdentified: (r['dateIdentified'] as string) || new Date().toISOString(),
@@ -361,6 +389,25 @@ export default function Home() {
             {errors.mitigation && (
               <p className="text-red-500 text-sm">{errors.mitigation}</p>
             )}
+            <label htmlFor="response" className="block text-sm font-medium">
+              Response
+            </label>
+            <select
+              id="response"
+              className="border p-1 w-full"
+              value={form.response}
+              onChange={(e) =>
+                setForm({ ...form, response: e.target.value as Risk['response'] })
+              }
+            >
+              <option>Avoid</option>
+              <option>Mitigate</option>
+              <option>Transfer</option>
+              <option>Accept</option>
+            </select>
+            {errors.response && (
+              <p className="text-red-500 text-sm">{errors.response}</p>
+            )}
             <label htmlFor="status" className="block text-sm font-medium">
               Status
             </label>
@@ -377,6 +424,15 @@ export default function Home() {
               <option>Mitigated</option>
               <option>Accepted</option>
             </select>
+            <label htmlFor="statusNote" className="block text-sm font-medium">
+              Status Change Note
+            </label>
+            <textarea
+              id="statusNote"
+              className="border p-1 w-full"
+              value={statusNote}
+              onChange={(e) => setStatusNote(e.target.value)}
+            />
             <label htmlFor="startDate" className="block text-sm font-medium">
               Start Date
             </label>
