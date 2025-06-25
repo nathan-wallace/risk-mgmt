@@ -150,6 +150,15 @@ export default function Home() {
   }
   risks.forEach((r) => matrix[r.probability][r.impact].push(r));
 
+  const aggregatedScore =
+    risks.length > 0
+      ?
+          risks.reduce(
+            (sum, r) => sum + r.probability * r.impact,
+            0
+          ) / risks.length
+      : 0;
+
   const handleCellClick = (prob: number, impact: number) => {
     if (filter && filter.prob === prob && filter.impact === impact) {
       setFilter(null);
@@ -376,7 +385,16 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-white rounded-lg shadow p-4 overflow-auto">
-          <h2 className="font-semibold">Risk Matrix</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold">Risk Matrix</h2>
+            <span
+              className={`px-2 py-1 rounded text-sm font-semibold ${color(
+                aggregatedScore
+              )}`}
+            >
+              {aggregatedScore.toFixed(1)}
+            </span>
+          </div>
           <table className="border-collapse rounded shadow">
             <caption className="sr-only">Risk matrix showing number of risks for each probability and impact score</caption>
             <tbody>
