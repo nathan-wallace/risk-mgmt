@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function ProjectDetailsPanel({ meta, pid }: Props) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   return (
     <div className="bg-white rounded-lg shadow">
       <div
