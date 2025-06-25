@@ -39,11 +39,13 @@ export default function Home() {
       const parsed: Risk[] = JSON.parse(savedRisks);
       setRisks(
         parsed.map((r) => {
-          const anyRisk = r as Record<string, unknown>;
+          const anyRisk = r as unknown as Record<string, unknown>;
+          const di =
+            r.dateIdentified ||
+            (typeof anyRisk.startDate === 'string' ? anyRisk.startDate : '');
           return {
             ...r,
-            dateIdentified:
-              r.dateIdentified || anyRisk.startDate || new Date().toISOString(),
+            dateIdentified: di || new Date().toISOString(),
             dateResolved: r.dateResolved || '',
           };
         }),
@@ -53,11 +55,13 @@ export default function Home() {
         .then((res) => res.json())
         .then((data: Risk[]) => {
           const mapped = data.map((r) => {
-            const anyRisk = r as Record<string, unknown>;
+            const anyRisk = r as unknown as Record<string, unknown>;
+            const di =
+              r.dateIdentified ||
+              (typeof anyRisk.startDate === 'string' ? anyRisk.startDate : '');
             return {
               ...r,
-              dateIdentified:
-                r.dateIdentified || anyRisk.startDate || new Date().toISOString(),
+              dateIdentified: di || new Date().toISOString(),
               dateResolved: r.dateResolved || '',
             };
           });
