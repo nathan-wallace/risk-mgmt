@@ -48,11 +48,11 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
     });
   });
   // intrinsic dimensions for viewBox calculations
-  const width = 600;
   const height = 300;
-  const x = (score: number) => (score / 25) * width;
-  const y = (date: Date) =>
-    ((date.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * height;
+  const width = Math.max(600, dates.length * 80);
+  const x = (date: Date) =>
+    ((date.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * width;
+  const y = (score: number) => height - (score / 25) * height;
   const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6'];
 
   return (
@@ -69,39 +69,39 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
         {/* grid lines */}
         {dates.slice(1).map((d, i) => (
           <line
-            key={`h-${i}`}
-            x1={0}
-            y1={y(d)}
-            x2={width}
-            y2={y(d)}
+            key={`v-${i}`}
+            x1={x(d)}
+            y1={0}
+            x2={x(d)}
+            y2={height}
             stroke="#ddd"
           />
         ))}
         {[5, 10, 15, 20, 25].map((s) => (
           <line
-            key={`v-${s}`}
-            x1={x(s)}
-            y1={0}
-            x2={x(s)}
-            y2={height}
+            key={`h-${s}`}
+            x1={0}
+            y1={y(s)}
+            x2={width}
+            y2={y(s)}
             stroke="#ddd"
           />
         ))}
         {/* y-axis labels */}
-        {dates.map((d, i) => (
-          <g key={i}>
-            <line x1={0} y1={y(d)} x2={-5} y2={y(d)} stroke="#000" />
-            <text x={-8} y={y(d) + 4} textAnchor="end" fontSize="10">
-              {d.toISOString().split('T')[0]}
+        {[0, 5, 10, 15, 20, 25].map((s) => (
+          <g key={s}>
+            <line x1={0} y1={y(s)} x2={-5} y2={y(s)} stroke="#000" />
+            <text x={-8} y={y(s) + 4} textAnchor="end" fontSize="10">
+              {s}
             </text>
           </g>
         ))}
         {/* x-axis labels */}
-        {[0, 5, 10, 15, 20, 25].map((s) => (
-          <g key={s}>
-            <line x1={x(s)} y1={height} x2={x(s)} y2={height + 5} stroke="#000" />
-            <text x={x(s)} y={height + 15} textAnchor="middle" fontSize="10">
-              {s}
+        {dates.map((d, i) => (
+          <g key={i}>
+            <line x1={x(d)} y1={height} x2={x(d)} y2={height + 5} stroke="#000" />
+            <text x={x(d)} y={height + 15} textAnchor="middle" fontSize="10">
+              {d.toISOString().split('T')[0]}
             </text>
           </g>
         ))}
@@ -113,7 +113,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
           fontSize="12"
           fontWeight="bold"
         >
-          Risk Score
+          Date
         </text>
         <text
           x={-40}
@@ -123,7 +123,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
           fontWeight="bold"
           transform={`rotate(-90 -40 ${height / 2})`}
         >
-          Date
+          Risk Score
         </text>
         {series.map((data, idx) => (
           <polyline
@@ -131,7 +131,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
             fill="none"
             stroke={colors[idx]}
             strokeWidth={2}
-            points={data.map((p) => `${x(p.value)},${y(p.date)}`).join(' ')}
+            points={data.map((p) => `${x(p.date)},${y(p.value)}`).join(' ')}
           />
         ))}
       </svg>
