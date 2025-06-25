@@ -227,17 +227,11 @@ export default function ProjectHome() {
                 </div>
               )}
             </div>
-            <Link
-              href={`/project/${pid}/settings`}
-              className="border px-2 py-1 rounded hover:bg-gray-100 text-black bg-white"
-            >
-              Settings
-            </Link>
           </div>
         </div>
       </nav>
       <main className="container mx-auto p-4 space-y-6">
-        <ProjectDetailsPanel meta={meta} />
+        <ProjectDetailsPanel meta={meta} pid={pid as string} />
         <div className="grid grid-cols-1 md:grid-cols-10 gap-4">
           <div className="space-y-4 md:col-span-3">
             <AggregatedRiskPanel score={aggregatedScore} />
