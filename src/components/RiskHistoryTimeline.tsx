@@ -72,7 +72,7 @@ export default function RiskHistoryTimeline({ risks, project }: Props) {
     <div className="overflow-auto">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="border w-full h-auto"
+        className="w-full h-auto"
         preserveAspectRatio="xMidYMid meet"
         style={{ maxHeight: height }}
       >
