@@ -1,6 +1,6 @@
 # Risk Manager
 
-Risk Manager is a lightweight web application for maintaining project risk registers. It is built with Next.js and React and stores data directly in your browser using local storage, so no database setup is required.
+Risk Manager is a lightweight web application for maintaining project risk registers. It stores data directly in your browser using local storage, so no database setup is required.
 
 ## Setup
 
@@ -41,6 +41,5 @@ All information is saved locally so it remains available the next time you open 
 - Interactive 5×5 matrix showing the count of risks for each probability and impact level.
 - Timeline chart displaying how many risks of each status are active over time.
 - Import and export data as CSV or XLSX files.
-- Styled with Tailwind CSS and uses the Inter font for a consistent look.
 
 Example API routes are provided in `pages/api` but the default UI operates entirely from local storage.
