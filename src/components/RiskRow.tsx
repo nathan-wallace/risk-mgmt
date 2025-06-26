@@ -27,7 +27,12 @@ export default function RiskRow({ risk, pid, onDelete }: Props) {
         </div>
       </td>
       <td className="border p-1">
-        <div className="font-medium">{risk.title}</div>
+        <Link
+          href={`/project/${pid}/risk/view/${risk.id}`}
+          className="font-medium text-blue-600 hover:underline"
+        >
+          {risk.title}
+        </Link>
         <div className="text-xs text-gray-500">{risk.description}</div>
         <div className="text-xs text-gray-500">
           {risk.category} | Owner: {risk.owner}
