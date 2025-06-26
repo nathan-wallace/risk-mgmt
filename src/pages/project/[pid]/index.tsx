@@ -327,8 +327,6 @@ export default function ProjectHome() {
           <table className="w-full border rounded">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border p-1">ID</th>
-                <th className="border p-1">Risk</th>
                 <th className="border p-1">
                   <div
                     className="flex items-center justify-center relative"
@@ -360,6 +358,7 @@ export default function ProjectHome() {
                     )}
                   </div>
                 </th>
+                <th className="border p-1">Risk</th>
                 <th className="border p-1">Priority</th>
                 <th className="border p-1">Status / Dates</th>
                 <th className="border p-1">Actions</th>
