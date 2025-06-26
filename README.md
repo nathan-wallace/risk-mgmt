@@ -1,37 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Risk Manager
 
-## Getting Started
+Risk Manager is a lightweight web application for maintaining project risk registers. It is built with Next.js and React and stores data directly in your browser using local storage, so no database setup is required.
 
-# Install dependencies and run the development server:
+## Setup
 
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+For a production build run:
 ```bash
-npm install
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- Open the **Projects** page to create a new project or manage existing ones.
+- Each project can store details such as manager, sponsor, dates and a risk management plan under **Settings**.
+- Add risks from the project screen using the **Add** menu and fill in probability, impact, owner and mitigation information.
+- Click cells in the risk matrix to filter the register by probability and impact.
+- Review the aggregated risk score and the history timeline to monitor changes over the life of the project.
+- Export the register to Excel or CSV, or import risks from these formats.
 
-The application supports exporting the current register to either Excel or CSV and importing additional risks from either format using the buttons on the main page.
+All information is saved locally so it remains available the next time you open the app in the same browser.
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Features
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+- Manage multiple projects, each with its own risk register and categories.
+- Collapsible project details panel with quick access to edit settings.
+- Aggregated risk indicator with colour coding for quick assessment.
+- Interactive 5×5 matrix showing the count of risks for each probability and impact level.
+- Timeline chart displaying how many risks of each status are active over time.
+- Import and export data as CSV or XLSX files.
+- Styled with Tailwind CSS and uses the Inter font for a consistent look.
 
-The UI uses the [Inter](https://fonts.google.com/specimen/Inter) font loaded via standard `<link>` tags for a consistent appearance without relying on `next/font`.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Example API routes are provided in `pages/api` but the default UI operates entirely from local storage.
