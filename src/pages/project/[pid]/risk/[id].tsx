@@ -143,164 +143,197 @@ export default function ManageRisk() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <h1 className="text-xl font-semibold mb-4">{id === 'new' ? 'Add Risk' : 'Edit Risk'}</h1>
-      <div className="bg-white rounded-lg shadow p-4 space-y-2 max-w-xl mx-auto">
-        <label htmlFor="description" className="block text-sm font-medium">
-          Description
-        </label>
-        <input
-          id="description"
-          className="border p-1 w-full"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-        />
-        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
-
-        <label htmlFor="category" className="block text-sm font-medium">
-          Category
-        </label>
-        <select
-          id="category"
-          className="border p-1 w-full"
-          value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-        >
-          <option value="">Select...</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-          {!categories.includes(form.category) && form.category && (
-            <option value={form.category}>{form.category}</option>
-          )}
-        </select>
-        {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
-
-        <label htmlFor="owner" className="block text-sm font-medium">
-          Owner
-        </label>
-        <input
-          id="owner"
-          className="border p-1 w-full"
-          value={form.owner}
-          onChange={(e) => setForm({ ...form, owner: e.target.value })}
-        />
-        {errors.owner && <p className="text-red-500 text-sm">{errors.owner}</p>}
-
-        <label htmlFor="mitigation" className="block text-sm font-medium">
-          Mitigation
-        </label>
-        <textarea
-          id="mitigation"
-          className="border p-1 w-full"
-          value={form.mitigation}
-          onChange={(e) => setForm({ ...form, mitigation: e.target.value })}
-        />
-        {errors.mitigation && <p className="text-red-500 text-sm">{errors.mitigation}</p>}
-
-        <label htmlFor="priority" className="block text-sm font-medium">
-          Priority
-        </label>
-        <select
-          id="priority"
-          className="border p-1 w-full"
-          value={form.priority}
-          onChange={(e) =>
-            setForm({ ...form, priority: e.target.value as Risk['priority'] })
-          }
-        >
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
-        {errors.priority && <p className="text-red-500 text-sm">{errors.priority}</p>}
-
-        <label htmlFor="response" className="block text-sm font-medium">
-          Response
-        </label>
-        <select
-          id="response"
-          className="border p-1 w-full"
-          value={form.response}
-          onChange={(e) => setForm({ ...form, response: e.target.value as Risk['response'] })}
-        >
-          <option>Avoid</option>
-          <option>Mitigate</option>
-          <option>Transfer</option>
-          <option>Accept</option>
-        </select>
-        {errors.response && <p className="text-red-500 text-sm">{errors.response}</p>}
-
-        <label htmlFor="status" className="block text-sm font-medium">
-          Status
-        </label>
-        <select
-          id="status"
-          className="border p-1 w-full"
-          value={form.status}
-          onChange={(e) => setForm({ ...form, status: e.target.value as Risk['status'] })}
-        >
-          <option>Open</option>
-          <option>In-Progress</option>
-          <option>Mitigated</option>
-          <option>Accepted</option>
-        </select>
-
-        <label htmlFor="statusNote" className="block text-sm font-medium">
-          Status Change Note
-        </label>
-        <textarea
-          id="statusNote"
-          className="border p-1 w-full"
-          value={statusNote}
-          onChange={(e) => setStatusNote(e.target.value)}
-        />
-
-        <label htmlFor="dateIdentified" className="block text-sm font-medium">
-          Date Identified
-        </label>
-        <input
-          id="dateIdentified"
-          type="date"
-          className="border p-1 w-full"
-          value={form.dateIdentified ? form.dateIdentified.split('T')[0] : ''}
-          onChange={(e) => setForm({ ...form, dateIdentified: e.target.value })}
-        />
-        {errors.dateIdentified && <p className="text-red-500 text-sm">{errors.dateIdentified}</p>}
-
-        <label htmlFor="dateResolved" className="block text-sm font-medium">
-          Date Resolved
-        </label>
-        <input
-          id="dateResolved"
-          type="date"
-          className="border p-1 w-full"
-          value={form.dateResolved ? form.dateResolved.split('T')[0] : ''}
-          onChange={(e) => setForm({ ...form, dateResolved: e.target.value })}
-        />
-        {errors.dateResolved && <p className="text-red-500 text-sm">{errors.dateResolved}</p>}
-
-        <div className="flex gap-2">
-          <label htmlFor="probability">Prob</label>
+      <div className="bg-white rounded-lg shadow p-4 space-y-6 max-w-3xl mx-auto">
+        <div className="space-y-1">
+          <label htmlFor="description" className="block text-sm font-medium">
+            Description
+          </label>
           <input
-            id="probability"
-            type="number"
-            min="1"
-            max="5"
-            className="border"
-            value={form.probability}
-            onChange={(e) => setForm({ ...form, probability: Number(e.target.value) })}
+            id="description"
+            className="border p-1 w-full"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
-          <label htmlFor="impact">Impact</label>
-          <input
-            id="impact"
-            type="number"
-            min="1"
-            max="5"
-            className="border"
-            value={form.impact}
-            onChange={(e) => setForm({ ...form, impact: Number(e.target.value) })}
+          {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label htmlFor="category" className="block text-sm font-medium">
+              Category
+            </label>
+            <select
+              id="category"
+              className="border p-1 w-full"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+            >
+              <option value="">Select...</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+              {!categories.includes(form.category) && form.category && (
+                <option value={form.category}>{form.category}</option>
+              )}
+            </select>
+            {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="owner" className="block text-sm font-medium">
+              Owner
+            </label>
+            <input
+              id="owner"
+              className="border p-1 w-full"
+              value={form.owner}
+              onChange={(e) => setForm({ ...form, owner: e.target.value })}
+            />
+            {errors.owner && <p className="text-red-500 text-sm">{errors.owner}</p>}
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="mitigation" className="block text-sm font-medium">
+            Mitigation
+          </label>
+          <textarea
+            id="mitigation"
+            className="border p-1 w-full"
+            value={form.mitigation}
+            onChange={(e) => setForm({ ...form, mitigation: e.target.value })}
           />
+          {errors.mitigation && <p className="text-red-500 text-sm">{errors.mitigation}</p>}
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label htmlFor="priority" className="block text-sm font-medium">
+              Priority
+            </label>
+            <select
+              id="priority"
+              className="border p-1 w-full"
+              value={form.priority}
+              onChange={(e) =>
+                setForm({ ...form, priority: e.target.value as Risk['priority'] })
+              }
+            >
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+            {errors.priority && <p className="text-red-500 text-sm">{errors.priority}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="response" className="block text-sm font-medium">
+              Response
+            </label>
+            <select
+              id="response"
+              className="border p-1 w-full"
+              value={form.response}
+              onChange={(e) => setForm({ ...form, response: e.target.value as Risk['response'] })}
+            >
+              <option>Avoid</option>
+              <option>Mitigate</option>
+              <option>Transfer</option>
+              <option>Accept</option>
+            </select>
+            {errors.response && <p className="text-red-500 text-sm">{errors.response}</p>}
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label htmlFor="status" className="block text-sm font-medium">
+              Status
+            </label>
+            <select
+              id="status"
+              className="border p-1 w-full"
+              value={form.status}
+              onChange={(e) => setForm({ ...form, status: e.target.value as Risk['status'] })}
+            >
+              <option>Open</option>
+              <option>In-Progress</option>
+              <option>Mitigated</option>
+              <option>Accepted</option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="statusNote" className="block text-sm font-medium">
+              Status Change Note
+            </label>
+            <textarea
+              id="statusNote"
+              className="border p-1 w-full"
+              value={statusNote}
+              onChange={(e) => setStatusNote(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label htmlFor="dateIdentified" className="block text-sm font-medium">
+              Date Identified
+            </label>
+            <input
+              id="dateIdentified"
+              type="date"
+              className="border p-1 w-full"
+              value={form.dateIdentified ? form.dateIdentified.split('T')[0] : ''}
+              onChange={(e) => setForm({ ...form, dateIdentified: e.target.value })}
+            />
+            {errors.dateIdentified && <p className="text-red-500 text-sm">{errors.dateIdentified}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="dateResolved" className="block text-sm font-medium">
+              Date Resolved
+            </label>
+            <input
+              id="dateResolved"
+              type="date"
+              className="border p-1 w-full"
+              value={form.dateResolved ? form.dateResolved.split('T')[0] : ''}
+              onChange={(e) => setForm({ ...form, dateResolved: e.target.value })}
+            />
+            {errors.dateResolved && <p className="text-red-500 text-sm">{errors.dateResolved}</p>}
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label htmlFor="probability">Probability (1 low, 5 high)</label>
+            <input
+              id="probability"
+              type="number"
+              min="1"
+              max="5"
+              className="border w-full"
+              value={form.probability}
+              onChange={(e) => setForm({ ...form, probability: Number(e.target.value) })}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="impact">Impact (1 low, 5 high)</label>
+            <input
+              id="impact"
+              type="number"
+              min="1"
+              max="5"
+              className="border w-full"
+              value={form.impact}
+              onChange={(e) => setForm({ ...form, impact: Number(e.target.value) })}
+            />
+          </div>
         </div>
         {errors.probability && <p className="text-red-500 text-sm">{errors.probability}</p>}
         {errors.impact && <p className="text-red-500 text-sm">{errors.impact}</p>}

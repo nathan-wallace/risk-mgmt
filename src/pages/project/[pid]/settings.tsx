@@ -68,106 +68,126 @@ export default function Settings() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <h1 className="text-xl font-semibold mb-4">Project Details</h1>
-      <div className="bg-white rounded-lg shadow p-4 space-y-3 max-w-xl mx-auto">
-        <label htmlFor="projectName" className="block text-sm font-medium">
-          Project Name
-        </label>
-        <input
-          id="projectName"
-          className="border p-2 rounded w-full"
-          value={form.projectName}
-          onChange={(e) => setForm({ ...form, projectName: e.target.value })}
-        />
-        {errors.projectName && <p className="text-red-500 text-sm">{errors.projectName}</p>}
+      <div className="bg-white rounded-lg shadow p-4 space-y-6 max-w-3xl mx-auto">
+        <p className="text-sm text-gray-500">Fill in basic project information and risk setup.</p>
 
-        <label htmlFor="projectManager" className="block text-sm font-medium">
-          Project Manager
-        </label>
-        <input
-          id="projectManager"
-          className="border p-2 rounded w-full"
-          value={form.projectManager}
-          onChange={(e) => setForm({ ...form, projectManager: e.target.value })}
-        />
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label htmlFor="projectName" className="block text-sm font-medium">
+              Project Name
+            </label>
+            <input
+              id="projectName"
+              className="border p-2 rounded w-full"
+              value={form.projectName}
+              onChange={(e) => setForm({ ...form, projectName: e.target.value })}
+            />
+            {errors.projectName && <p className="text-red-500 text-sm">{errors.projectName}</p>}
+          </div>
 
-        <label htmlFor="sponsor" className="block text-sm font-medium">
-          Sponsor
-        </label>
-        <input
-          id="sponsor"
-          className="border p-2 rounded w-full"
-          value={form.sponsor}
-          onChange={(e) => setForm({ ...form, sponsor: e.target.value })}
-        />
+          <div className="space-y-1">
+            <label htmlFor="projectManager" className="block text-sm font-medium">
+              Project Manager
+            </label>
+            <input
+              id="projectManager"
+              className="border p-2 rounded w-full"
+              value={form.projectManager}
+              onChange={(e) => setForm({ ...form, projectManager: e.target.value })}
+            />
+          </div>
 
-        <label htmlFor="startDate" className="block text-sm font-medium">
-          Start Date
-        </label>
-        <input
-          id="startDate"
-          type="date"
-          className="border p-2 rounded w-full"
-          value={form.startDate}
-          onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-        />
-        {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate}</p>}
+          <div className="space-y-1">
+            <label htmlFor="sponsor" className="block text-sm font-medium">
+              Sponsor
+            </label>
+            <input
+              id="sponsor"
+              className="border p-2 rounded w-full"
+              value={form.sponsor}
+              onChange={(e) => setForm({ ...form, sponsor: e.target.value })}
+            />
+          </div>
 
-        <label htmlFor="endDate" className="block text-sm font-medium">
-          End Date
-        </label>
-        <input
-          id="endDate"
-          type="date"
-          className="border p-2 rounded w-full"
-          value={form.endDate}
-          onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-        />
-        {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate}</p>}
+          <div className="space-y-1">
+            <label htmlFor="startDate" className="block text-sm font-medium">
+              Start Date
+            </label>
+            <input
+              id="startDate"
+              type="date"
+              className="border p-2 rounded w-full"
+              value={form.startDate}
+              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+            />
+            {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate}</p>}
+          </div>
 
-        <label htmlFor="riskPlan" className="block text-sm font-medium">
-          Risk Management Plan
-        </label>
-        <textarea
-          id="riskPlan"
-          className="border p-2 rounded w-full"
-          value={form.riskPlan}
-          onChange={(e) => setForm({ ...form, riskPlan: e.target.value })}
-        />
+          <div className="space-y-1">
+            <label htmlFor="endDate" className="block text-sm font-medium">
+              End Date
+            </label>
+            <input
+              id="endDate"
+              type="date"
+              className="border p-2 rounded w-full"
+              value={form.endDate}
+              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+            />
+            {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate}</p>}
+          </div>
+        </div>
 
-        <label className="block text-sm font-medium mt-4">Risk Categories</label>
-        <ul className="space-y-1">
-          {categories.map((cat, idx) => (
-            <li key={idx} className="flex items-center">
-              <span className="flex-1">{cat}</span>
-              <button
-                type="button"
-                onClick={() => setCategories(categories.filter((_, i) => i !== idx))}
-                className="text-red-600 ml-2"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="flex items-center mt-1">
-          <input
-            className="border p-1 flex-1"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
+        <div className="space-y-1">
+          <label htmlFor="riskPlan" className="block text-sm font-medium">
+            Risk Management Plan
+          </label>
+          <textarea
+            id="riskPlan"
+            className="border p-2 rounded w-full"
+            value={form.riskPlan}
+            onChange={(e) => setForm({ ...form, riskPlan: e.target.value })}
           />
-          <button
-            type="button"
-            onClick={() => {
-              const trimmed = newCategory.trim();
-              if (trimmed && !categories.includes(trimmed)) {
-                setCategories([...categories, trimmed]);
-              }
-              setNewCategory('');
-            }}
-            className="ml-2 border px-2 py-1 rounded"
-          >
-            Add
-          </button>
+          <p className="text-sm text-gray-500">Outline how risks will be managed throughout the project.</p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Risk Categories</label>
+          <p className="text-sm text-gray-500 mb-2">Add categories to classify project risks.</p>
+          <ul className="space-y-1 mb-2">
+            {categories.map((cat, idx) => (
+              <li key={idx} className="flex items-center">
+                <span className="flex-1">{cat}</span>
+                <button
+                  type="button"
+                  onClick={() => setCategories(categories.filter((_, i) => i !== idx))}
+                  className="text-red-600 ml-2"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center">
+            <input
+              className="border p-1 flex-1"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const trimmed = newCategory.trim();
+                if (trimmed && !categories.includes(trimmed)) {
+                  setCategories([...categories, trimmed]);
+                }
+                setNewCategory('');
+              }}
+              className="ml-2 border px-2 py-1 rounded"
+            >
+              Add
+            </button>
+          </div>
         </div>
 
         <div className="space-x-2 text-right pt-2">
