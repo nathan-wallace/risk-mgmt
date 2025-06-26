@@ -24,9 +24,11 @@ export default function ManageRisk() {
 
   const [risks, setRisks] = useState<Risk[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [existingRisk, setExistingRisk] = useState<Risk | null>(null);
   const [form, setForm] = useState<RiskInput>(emptyForm);
   const [statusNote, setStatusNote] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof RiskInput, string>>>({});
+  const score = form.probability * form.impact;
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -56,6 +58,7 @@ export default function ManageRisk() {
         } = risk;
         void discardId;
         void discardLast;
+        setExistingRisk(risk);
         setForm({
           ...emptyForm,
           ...rest,
@@ -68,6 +71,7 @@ export default function ManageRisk() {
     }
     setForm(emptyForm);
     setStatusNote('');
+    setExistingRisk(null);
   }, [router.isReady, pid, id]);
 
   const saveRisks = (items: Risk[]) => {
@@ -153,8 +157,9 @@ export default function ManageRisk() {
         </div>
       </nav>
       <main className="container mx-auto p-4">
-        <h1 className="text-xl font-semibold mb-4">{id === 'new' ? 'Add Risk' : 'Edit Risk'}</h1>
         <div className="bg-white rounded-lg shadow p-4 space-y-6 max-w-3xl mx-auto">
+          <h1 className="text-xl font-semibold">{id === 'new' ? 'Add Risk' : 'Edit Risk'}</h1>
+          <div className="text-sm text-gray-600">Risk Score: <span className="font-semibold">{score}</span></div>
         <div className="space-y-1">
           <label htmlFor="title" className="block text-sm font-medium">
             Title
@@ -333,33 +338,49 @@ export default function ManageRisk() {
 
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label htmlFor="probability">Probability (1 low, 5 high)</label>
-            <input
+            <label htmlFor="probability" className="block text-sm font-medium">Probability</label>
+            <select
               id="probability"
-              type="number"
-              min="1"
-              max="5"
-              className="border w-full"
+              className="border p-1 w-full"
               value={form.probability}
               onChange={(e) => setForm({ ...form, probability: Number(e.target.value) })}
-            />
+            >
+              {[1,2,3,4,5].map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="impact">Impact (1 low, 5 high)</label>
-            <input
+            <label htmlFor="impact" className="block text-sm font-medium">Impact</label>
+            <select
               id="impact"
-              type="number"
-              min="1"
-              max="5"
-              className="border w-full"
+              className="border p-1 w-full"
               value={form.impact}
               onChange={(e) => setForm({ ...form, impact: Number(e.target.value) })}
-            />
+            >
+              {[1,2,3,4,5].map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
           </div>
         </div>
         {errors.probability && <p className="text-red-500 text-sm">{errors.probability}</p>}
         {errors.impact && <p className="text-red-500 text-sm">{errors.impact}</p>}
+
+        {existingRisk && existingRisk.statusHistory.length > 0 && (
+          <div className="space-y-1">
+            <h2 className="font-semibold text-sm">Status History</h2>
+            <ul className="list-disc ml-5 text-sm space-y-1">
+              {existingRisk.statusHistory.map((s, idx) => (
+                <li key={idx}>
+                  {s.date.split('T')[0]} - {s.status}
+                  {s.note ? ` - ${s.note}` : ''}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="space-x-2">
           <button onClick={submit} className="bg-indigo-600 text-white px-3 py-1 rounded">
