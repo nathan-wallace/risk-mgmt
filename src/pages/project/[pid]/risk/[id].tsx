@@ -33,12 +33,14 @@ export default function ManageRisk() {
     const saved = typeof window !== 'undefined' && localStorage.getItem('projects');
     if (!saved) {
       setForm(emptyForm);
+      setStatusNote('');
       return;
     }
     const projects: Project[] = JSON.parse(saved);
     const proj = projects.find((p) => p.id === pid);
     if (!proj) {
       setForm(emptyForm);
+      setStatusNote('');
       return;
     }
     setRisks(proj.risks);
@@ -49,22 +51,23 @@ export default function ManageRisk() {
         const {
           id: discardId,
           lastReviewed: discardLast,
-          statusHistory: discardHistory,
+          statusHistory,
           ...rest
         } = risk;
         void discardId;
         void discardLast;
-        void discardHistory;
         setForm({
           ...emptyForm,
           ...rest,
           dateIdentified: rest.dateIdentified || new Date().toISOString(),
           dateResolved: rest.dateResolved || '',
         });
+        setStatusNote(statusHistory[statusHistory.length - 1]?.note || '');
         return;
       }
     }
     setForm(emptyForm);
+    setStatusNote('');
   }, [router.isReady, pid, id]);
 
   const saveRisks = (items: Risk[]) => {

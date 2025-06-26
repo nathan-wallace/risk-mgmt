@@ -15,25 +15,22 @@ const scoreColor = (score: number) => {
 };
 
 export default function RiskRow({ risk, pid, onDelete }: Props) {
-  const shortId = risk.id.length > 6 ? risk.id.slice(-6) : risk.id;
   const score = risk.probability * risk.impact;
+  const lastNote = risk.statusHistory[risk.statusHistory.length - 1]?.note || '';
   return (
     <tr className="border-t hover:bg-gray-50 transition">
-      <td className="border p-1 text-xs text-gray-500">{shortId}</td>
+      <td className="border p-1 text-center space-y-1">
+        <div
+          className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center font-semibold ${scoreColor(score)}`}
+        >
+          {score}
+        </div>
+      </td>
       <td className="border p-1">
         <div className="font-medium">{risk.title}</div>
         <div className="text-xs text-gray-500">{risk.description}</div>
         <div className="text-xs text-gray-500">
           {risk.category} | Owner: {risk.owner}
-        </div>
-      </td>
-      <td className="border p-1 text-center space-y-1">
-        <div
-          className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center font-semibold ${scoreColor(
-            score
-          )}`}
-        >
-          {score}
         </div>
       </td>
       <td className="border p-1 text-center">{risk.priority}</td>
@@ -43,11 +40,17 @@ export default function RiskRow({ risk, pid, onDelete }: Props) {
           {risk.dateIdentified ? risk.dateIdentified.split('T')[0] : ''}
           {risk.dateResolved && (
             <>
-              {' → '}
+              {' \u2192 '}
               {risk.dateResolved.split('T')[0]}
             </>
           )}
         </div>
+        <div className="text-xs text-gray-500">
+          Reviewed: {risk.lastReviewed.split('T')[0]}
+        </div>
+        {lastNote && (
+          <div className="text-xs italic text-gray-500">{lastNote}</div>
+        )}
       </td>
       <td className="border p-1 space-x-2 whitespace-nowrap">
         <Link href={`/project/${pid}/risk/${risk.id}`} className="text-blue-600">
