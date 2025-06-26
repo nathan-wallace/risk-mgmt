@@ -27,6 +27,8 @@ npm start
 - Add risks from the project screen using the **Add** menu and fill in probability, impact, owner and mitigation information.
 - Click cells in the risk matrix to filter the register by probability and impact.
 - Review the aggregated risk score and the history timeline to monitor changes over the life of the project.
+- Set or update a risk's **Status** when managing a risk. You can include an optional note and every change is saved to the risk's history.
+- Use the **Risk History Timeline** to visualise how many risks of each status are active between the project start and end dates.
 - Export the register to Excel or CSV, or import risks from these formats.
 
 All information is saved locally so it remains available the next time you open the app in the same browser.
