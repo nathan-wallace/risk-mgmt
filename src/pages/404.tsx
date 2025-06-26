@@ -1,20 +1,14 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { Project } from '@/types/project';
+import Link from 'next/link';
 
 export default function Custom404() {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!router.isReady) return;
-    const saved = typeof window !== 'undefined' && localStorage.getItem('projects');
-    const list: Project[] = saved ? JSON.parse(saved) : [];
-    if (list.length > 0) {
-      router.replace(`/project/${list[list.length - 1].id}`);
-    } else {
-      router.replace('/projects');
-    }
-  }, [router]);
-
-  return null;
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <h1 className="text-2xl font-semibold">Page not found</h1>
+        <Link href="/projects" className="text-blue-600">
+          Go to Projects
+        </Link>
+      </div>
+    </div>
+  );
 }
