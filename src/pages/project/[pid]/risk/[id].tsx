@@ -143,9 +143,15 @@ export default function ManageRisk() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <h1 className="text-xl font-semibold mb-4">{id === 'new' ? 'Add Risk' : 'Edit Risk'}</h1>
-      <div className="bg-white rounded-lg shadow p-4 space-y-6 max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-blue-950 text-white shadow">
+        <div className="container mx-auto px-4 py-3 flex items-center">
+          <h1 className="text-xl font-semibold">Risk Manager</h1>
+        </div>
+      </nav>
+      <main className="container mx-auto p-4">
+        <h1 className="text-xl font-semibold mb-4">{id === 'new' ? 'Add Risk' : 'Edit Risk'}</h1>
+        <div className="bg-white rounded-lg shadow p-4 space-y-6 max-w-3xl mx-auto">
         <div className="space-y-1">
           <label htmlFor="title" className="block text-sm font-medium">
             Title
@@ -369,6 +375,7 @@ export default function ManageRisk() {
           </button>
         </div>
       </div>
+      </main>
     </div>
   );
 }
