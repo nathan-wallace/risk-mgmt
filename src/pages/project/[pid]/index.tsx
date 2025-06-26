@@ -183,6 +183,7 @@ export default function ProjectHome() {
         const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(riskSheet);
         const records: Risk[] = rows.map((r) => ({
           id: (r['id'] as string) || Date.now().toString() + Math.random().toString(16).slice(2),
+          title: (r['title'] as string) || '',
           description: (r['description'] as string) || '',
           category: (r['category'] as string) || '',
           probability: Number(r['probability']) || 1,

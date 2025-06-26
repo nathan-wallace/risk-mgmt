@@ -21,7 +21,8 @@ export default function RiskRow({ risk, pid, onDelete }: Props) {
     <tr className="border-t hover:bg-gray-50 transition">
       <td className="border p-1 text-xs text-gray-500">{shortId}</td>
       <td className="border p-1">
-        <div className="font-medium">{risk.description}</div>
+        <div className="font-medium">{risk.title}</div>
+        <div className="text-xs text-gray-500">{risk.description}</div>
         <div className="text-xs text-gray-500">
           {risk.category} | Owner: {risk.owner}
         </div>

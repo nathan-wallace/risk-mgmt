@@ -8,6 +8,7 @@ export interface StatusChange {
 
 export interface Risk {
   id: string;
+  title: string;
   description: string;
   category: string;
   probability: number; // 1-5
