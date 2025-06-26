@@ -4,6 +4,7 @@ import { Risk, RiskInput } from '@/types/risk';
 import { Project } from '@/types/project';
 
 const emptyForm: RiskInput = {
+  title: '',
   description: '',
   category: '',
   probability: 1,
@@ -80,6 +81,7 @@ export default function ManageRisk() {
 
   const validate = () => {
     const errs: Partial<Record<keyof RiskInput, string>> = {};
+    if (!form.title.trim()) errs.title = 'Title is required';
     if (!form.description.trim()) errs.description = 'Description is required';
     if (!form.category.trim()) errs.category = 'Category is required';
     if (!form.owner.trim()) errs.owner = 'Owner is required';
@@ -144,6 +146,18 @@ export default function ManageRisk() {
     <div className="min-h-screen bg-gray-50 p-4">
       <h1 className="text-xl font-semibold mb-4">{id === 'new' ? 'Add Risk' : 'Edit Risk'}</h1>
       <div className="bg-white rounded-lg shadow p-4 space-y-6 max-w-3xl mx-auto">
+        <div className="space-y-1">
+          <label htmlFor="title" className="block text-sm font-medium">
+            Title
+          </label>
+          <input
+            id="title"
+            className="border p-1 w-full"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
+          {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
+        </div>
         <div className="space-y-1">
           <label htmlFor="description" className="block text-sm font-medium">
             Description

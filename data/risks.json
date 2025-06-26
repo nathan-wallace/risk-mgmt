@@ -2,6 +2,7 @@
   {
     "id": "1750787227213",
     "lastReviewed": "2025-06-24T17:47:07.213Z",
+    "title": "Example Risk",
     "description": "Something",
     "category": "tech",
     "probability": 3,
@@ -24,6 +25,7 @@
   {
     "id": "1750787259747",
     "lastReviewed": "2025-06-24T17:47:39.747Z",
+    "title": "",
     "description": "",
     "category": "",
     "probability": 1,
@@ -46,6 +48,7 @@
   {
     "id": "1750787260239",
     "lastReviewed": "2025-06-24T17:47:40.239Z",
+    "title": "",
     "description": "",
     "category": "",
     "probability": 1,
