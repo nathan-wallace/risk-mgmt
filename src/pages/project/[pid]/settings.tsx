@@ -66,9 +66,15 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <h1 className="text-xl font-semibold mb-4">Project Details</h1>
-      <div className="bg-white rounded-lg shadow p-4 space-y-6 max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-blue-950 text-white shadow">
+        <div className="container mx-auto px-4 py-3 flex items-center">
+          <h1 className="text-xl font-semibold">Risk Manager</h1>
+        </div>
+      </nav>
+      <main className="container mx-auto p-4">
+        <h1 className="text-xl font-semibold mb-4">Project Details</h1>
+        <div className="bg-white rounded-lg shadow p-4 space-y-6 max-w-3xl mx-auto">
         <p className="text-sm text-gray-500">Fill in basic project information and risk setup.</p>
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -199,6 +205,7 @@ export default function Settings() {
           </button>
         </div>
       </div>
+      </main>
     </div>
   );
 }
